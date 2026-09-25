@@ -52,7 +52,7 @@
     Content="Студенти"
     Height="42"
     Margin="0,0,0,8"
-    IsEnabled="False"/>
+    Click="StudentsButton_Click"/>
 
                 <Button
     Content="Викладачі та предмети"

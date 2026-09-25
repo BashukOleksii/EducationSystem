@@ -36,6 +36,10 @@ public sealed class GroupService
         );
     }
 
+    public Task<IReadOnlyList<Group>> GetAllAsync()
+    {
+        return _groupRepository.GetAllAsync();
+    }
     public async Task<int> CreateAsync(
         string prefix,
         int number)

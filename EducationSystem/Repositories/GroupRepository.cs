@@ -44,6 +44,26 @@ namespace EducationSystem.Repositories
                 .DeleteAsync();
         }
 
+        public async Task<IReadOnlyList<Group>> GetAllAsync()
+        {
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
+
+            IEnumerable<Group> groups =
+                await db
+                    .Query(tableName)
+                    .Select(
+                        "id",
+                        "prefix",
+                        "number"
+                    )
+                    .OrderBy("prefix")
+                    .OrderBy("number")
+                    .GetAsync<Group>();
+
+            return groups.ToList();
+        }
+
         public async Task<Group?> GetByIdAsync(int id)
         {
             using QueryFactory db = _connectionFactory.CreateQueryFactory();

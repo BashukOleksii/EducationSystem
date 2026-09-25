@@ -11,6 +11,7 @@ namespace EducationSystem.Repositories.Interfaces
             int pageSize
         );
         Task<Group?> GetByIdAsync(int id);
+        Task<IReadOnlyList<Group>> GetAllAsync();
         Task<int> CreateAsync(Group group);
         Task UpdateAsync(Group group);
         Task DeleteAsync(int id);

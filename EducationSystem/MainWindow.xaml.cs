@@ -112,5 +112,53 @@ namespace EducationSystem
                     viewModel
                 );
         }
+
+        private void StudentsButton_Click(
+    object sender,
+    RoutedEventArgs e)
+        {
+            ShowStudents();
+        }
+
+
+        private void ShowStudents()
+        {
+            GroupRepository groupRepository =
+                new GroupRepository(
+                    _databaseFactory
+                );
+
+
+            StudentRepository studentRepository =
+                new StudentRepository(
+                    _databaseFactory
+                );
+
+
+            GroupService groupService =
+                new GroupService(
+                    groupRepository
+                );
+
+
+            StudentService studentService =
+                new StudentService(
+                    studentRepository,
+                    groupRepository
+                );
+
+
+            StudentsViewModel viewModel =
+                new StudentsViewModel(
+                    studentService,
+                    groupService
+                );
+
+
+            MainContent.Content =
+                new StudentsView(
+                    viewModel
+                );
+        }
     }
 }

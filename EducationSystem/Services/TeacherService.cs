@@ -51,6 +51,10 @@ namespace EducationSystem.Services
                 .GetByIdAsync(id);
         }
 
+        public Task<IReadOnlyList<Teacher>> GetAllAsync()
+        {
+            return _teacherRepository.GetAllAsync();
+        }
 
         public async Task<int> CreateAsync(
             string firstName,

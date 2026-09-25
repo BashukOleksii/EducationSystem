@@ -120,6 +120,25 @@ namespace EducationSystem.Repositories
             return ids.Any();
         }
 
+        public async Task<IReadOnlyList<Subject>> GetAllAsync()
+        {
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
+
+            IEnumerable<Subject> subjects =
+                await db
+                    .Query(TableName)
+                    .Select(
+                        "id",
+                        "name",
+                        "duration"
+                    )
+                    .OrderBy("name")
+                    .GetAsync<Subject>();
+
+            return subjects.ToList();
+        }
+
         public async Task<int> CreateAsync(
             Subject subject)
         {

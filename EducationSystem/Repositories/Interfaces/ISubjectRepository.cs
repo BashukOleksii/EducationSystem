@@ -18,6 +18,8 @@ namespace EducationSystem.Repositories.Interfaces
             int? excludeId = null
         );
 
+        Task<IReadOnlyList<Subject>> GetAllAsync();
+
         Task<int> CreateAsync(Subject subject);
 
         Task UpdateAsync(Subject subject);

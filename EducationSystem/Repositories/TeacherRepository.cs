@@ -128,7 +128,27 @@ namespace EducationSystem.Repositories
             };
         }
 
+        public async Task<IReadOnlyList<Teacher>> GetAllAsync()
+        {
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
+            IEnumerable<Teacher> teachers =
+                await db
+                    .Query(TableName)
+                    .Select(
+                        "id",
+                        "first_name",
+                        "last_name",
+                        "email",
+                        "category"
+                    )
+                    .OrderBy("last_name")
+                    .OrderBy("first_name")
+                    .GetAsync<Teacher>();
+
+            return teachers.ToList();
+        }
         public async Task<Teacher?> GetByIdAsync(
             int id)
         {

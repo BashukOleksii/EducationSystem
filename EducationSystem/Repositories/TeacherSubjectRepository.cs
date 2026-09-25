@@ -1,6 +1,6 @@
 ﻿using EducationSystem.Data;
 using EducationSystem.DTOs.Common;
-using EducationSystem.DTOs.Students;
+using EducationSystem.DTOs.TeacherSubjects;
 using EducationSystem.Models;
 using EducationSystem.Repositories.Interfaces;
 using SqlKata;
@@ -8,14 +8,16 @@ using SqlKata.Execution;
 
 namespace EducationSystem.Repositories
 {
-    public sealed class StudentRepository : IStudentRepository
+    public sealed class TeacherSubjectRepository
+        : ITeacherSubjectRepository
     {
         private readonly DatabaseConnectionFactory _connectionFactory;
 
-        private const string TableName = "students";
+        private const string TableName =
+            "teachers_subjects";
 
 
-        public StudentRepository(
+        public TeacherSubjectRepository(
             DatabaseConnectionFactory connectionFactory)
         {
             _connectionFactory =
@@ -23,11 +25,13 @@ namespace EducationSystem.Repositories
         }
 
 
-        public async Task<PagedResult<StudentListItem>> GetPagedAsync(
-            string? search,
-            int? groupId,
-            int page,
-            int pageSize)
+        public async Task<PagedResult<TeacherSubjectListItem>>
+            GetPagedAsync(
+                string? search,
+                int? teacherId,
+                int? subjectId,
+                int page,
+                int pageSize)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -36,9 +40,14 @@ namespace EducationSystem.Repositories
             Query query =
                 db.Query(TableName)
                     .Join(
-                        "groups",
-                        "groups.id",
-                        "students.group_id"
+                        "teachers",
+                        "teachers.id",
+                        "teachers_subjects.teacher_id"
+                    )
+                    .Join(
+                        "subjects",
+                        "subjects.id",
+                        "teachers_subjects.subject_id"
                     );
 
             if (!string.IsNullOrWhiteSpace(search))
@@ -54,23 +63,29 @@ namespace EducationSystem.Repositories
 
                 foreach (string part in searchParts)
                 {
-                    string value = part;
+                    string value =
+                        part;
 
 
                     query.Where(q =>
                     {
                         q.WhereContains(
-                            "students.first_name",
+                            "teachers.first_name",
                             value
                         );
 
                         q.OrWhereContains(
-                            "students.last_name",
+                            "teachers.last_name",
                             value
                         );
 
                         q.OrWhereContains(
-                            "students.email",
+                            "teachers.email",
+                            value
+                        );
+
+                        q.OrWhereContains(
+                            "subjects.name",
                             value
                         );
 
@@ -79,13 +94,23 @@ namespace EducationSystem.Repositories
                 }
             }
 
-            if (groupId.HasValue)
+
+            if (teacherId.HasValue)
             {
                 query.Where(
-                    "students.group_id",
-                    groupId.Value
+                    "teachers_subjects.teacher_id",
+                    teacherId.Value
                 );
             }
+
+            if (subjectId.HasValue)
+            {
+                query.Where(
+                    "teachers_subjects.subject_id",
+                    subjectId.Value
+                );
+            }
+
 
             IEnumerable<int> countResult =
                 await query
@@ -98,31 +123,35 @@ namespace EducationSystem.Repositories
                 countResult.FirstOrDefault();
 
 
-            IEnumerable<StudentListItem> students =
+            IEnumerable<TeacherSubjectListItem> items =
                 await query
                     .Clone()
                     .Select(
-                        "students.id",
-                        "students.first_name",
-                        "students.last_name",
-                        "students.email",
-                        "students.group_id",
-                        "groups.prefix as group_prefix",
-                        "groups.number as group_number"
+                        "teachers_subjects.id",
+                        "teachers_subjects.teacher_id",
+                        "teachers_subjects.subject_id",
+                        "teachers_subjects.subgroup",
+
+                        "teachers.first_name as teacher_first_name",
+                        "teachers.last_name as teacher_last_name",
+                        "teachers.email as teacher_email",
+
+                        "subjects.name as subject_name"
                     )
-                    .OrderBy("students.last_name")
-                    .OrderBy("students.first_name")
+                    .OrderBy("teachers.last_name")
+                    .OrderBy("teachers.first_name")
+                    .OrderBy("subjects.name")
                     .ForPage(
                         page,
                         pageSize
                     )
-                    .GetAsync<StudentListItem>();
+                    .GetAsync<TeacherSubjectListItem>();
 
 
-            return new PagedResult<StudentListItem>
+            return new PagedResult<TeacherSubjectListItem>
             {
                 Items =
-                    students.ToList(),
+                    items.ToList(),
 
                 TotalCount =
                     totalCount,
@@ -135,16 +164,15 @@ namespace EducationSystem.Repositories
             };
         }
 
-   
 
-        public async Task<Student?> GetByIdAsync(
+        public async Task<TeacherSubject?> GetByIdAsync(
             int id)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
 
-            IEnumerable<Student> students =
+            IEnumerable<TeacherSubject> items =
                 await db
                     .Query(TableName)
                     .Where(
@@ -153,21 +181,23 @@ namespace EducationSystem.Repositories
                     )
                     .Select(
                         "id",
-                        "first_name",
-                        "last_name",
-                        "email",
-                        "group_id"
+                        "teacher_id",
+                        "subject_id",
+                        "subgroup",
+                        "created_at",
+                        "updated_at"
                     )
                     .Limit(1)
-                    .GetAsync<Student>();
+                    .GetAsync<TeacherSubject>();
 
 
-            return students.FirstOrDefault();
+            return items.FirstOrDefault();
         }
 
 
-        public async Task<bool> ExistsByEmailAsync(
-            string email,
+        public async Task<bool> ExistsAsync(
+            int teacherId,
+            int subjectId,
             int? excludeId = null)
         {
             using QueryFactory db =
@@ -177,9 +207,14 @@ namespace EducationSystem.Repositories
             Query query =
                 db.Query(TableName)
                     .Where(
-                        "email",
-                        email
+                        "teacher_id",
+                        teacherId
+                    )
+                    .Where(
+                        "subject_id",
+                        subjectId
                     );
+
 
             if (excludeId.HasValue)
             {
@@ -203,7 +238,7 @@ namespace EducationSystem.Repositories
 
 
         public async Task<int> CreateAsync(
-            Student student)
+            TeacherSubject teacherSubject)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -215,17 +250,14 @@ namespace EducationSystem.Repositories
                     .InsertGetIdAsync<int>(
                         new
                         {
-                            first_name =
-                                student.FirstName,
+                            teacher_id =
+                                teacherSubject.TeacherId,
 
-                            last_name =
-                                student.LastName,
+                            subject_id =
+                                teacherSubject.SubjectId,
 
-                            email =
-                                student.Email,
-
-                            group_id =
-                                student.GroupId
+                            subgroup =
+                                teacherSubject.Subgroup
                         }
                     );
 
@@ -235,7 +267,7 @@ namespace EducationSystem.Repositories
 
 
         public async Task UpdateAsync(
-            Student student)
+            TeacherSubject teacherSubject)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -245,22 +277,19 @@ namespace EducationSystem.Repositories
                 .Query(TableName)
                 .Where(
                     "id",
-                    student.Id
+                    teacherSubject.Id
                 )
                 .UpdateAsync(
                     new
                     {
-                        first_name =
-                            student.FirstName,
+                        teacher_id =
+                            teacherSubject.TeacherId,
 
-                        last_name =
-                            student.LastName,
+                        subject_id =
+                            teacherSubject.SubjectId,
 
-                        email =
-                            student.Email,
-
-                        group_id =
-                            student.GroupId,
+                        subgroup =
+                            teacherSubject.Subgroup,
 
                         updated_at =
                             DateTime.Now

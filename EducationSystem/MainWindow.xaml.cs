@@ -160,5 +160,67 @@ namespace EducationSystem
                     viewModel
                 );
         }
+
+        private void TeacherSubjectsButton_Click(
+            object sender,
+            RoutedEventArgs e)
+                {
+                    ShowTeacherSubjects();
+                }
+
+
+        private void ShowTeacherSubjects()
+        {
+            TeacherRepository teacherRepository =
+                new TeacherRepository(
+                    _databaseFactory
+                );
+
+
+            SubjectRepository subjectRepository =
+                new SubjectRepository(
+                    _databaseFactory
+                );
+
+
+            TeacherSubjectRepository teacherSubjectRepository =
+                new TeacherSubjectRepository(
+                    _databaseFactory
+                );
+
+
+            TeacherService teacherService =
+                new TeacherService(
+                    teacherRepository
+                );
+
+
+            SubjectService subjectService =
+                new SubjectService(
+                    subjectRepository
+                );
+
+
+            TeacherSubjectService teacherSubjectService =
+                new TeacherSubjectService(
+                    teacherSubjectRepository,
+                    teacherRepository,
+                    subjectRepository
+                );
+
+
+            TeacherSubjectsViewModel viewModel =
+                new TeacherSubjectsViewModel(
+                    teacherSubjectService,
+                    teacherService,
+                    subjectService
+                );
+
+
+            MainContent.Content =
+                new TeacherSubjectsView(
+                    viewModel
+                );
+        }
     }
 }

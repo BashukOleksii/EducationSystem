@@ -12,6 +12,6 @@ namespace EducationSystem.Models
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
 
-        public string name => $"{Prefix}-{Number}";
+        public string Name => $"{Prefix}-{Number}";
     }
 }

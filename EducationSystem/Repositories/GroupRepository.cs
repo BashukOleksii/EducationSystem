@@ -57,47 +57,76 @@ namespace EducationSystem.Repositories
             return group.FirstOrDefault();
         }
 
-        public async Task<PagedResult<Group>> GetPagedAsync(string? search, int page, int pageSize)
+        public async Task<PagedResult<Group>> GetPagedAsync(
+    string? search,
+    int page,
+    int pageSize)
         {
-            using QueryFactory db = _connectionFactory.CreateQueryFactory();
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
-            Query query= db.Query(tableName);
+            Query query = db.Query(tableName);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string value = search.Trim();
 
-                query.Where(q => 
+                query.Where(q =>
                 {
                     q.WhereContains("prefix", value);
 
-                    if(byte.TryParse(value, out byte result))
-                        q.OrWhere("number", result);
-                    
-                    return q;
+                    if (byte.TryParse(value, out byte number))
+                    {
+                        q.OrWhere("number", number);
+                    }
 
+                    string[] parts = value.Split('-');
+
+                    if (parts.Length == 2 &&
+                        byte.TryParse(parts[1], out byte groupNumber))
+                    {
+                        string prefix = parts[0].Trim();
+
+                        q.OrWhere(inner =>
+                        {
+                            inner
+                                .Where("prefix", prefix)
+                                .Where("number", groupNumber);
+
+                            return inner;
+                        });
+                    }
+
+                    return q;
                 });
             }
 
-            IEnumerable<int> countResult = await query.Clone().AsCount().GetAsync<int>();
+            IEnumerable<int> countResult =
+                await query
+                    .Clone()
+                    .AsCount()
+                    .GetAsync<int>();
 
-            int totalCount = countResult.FirstOrDefault();
+            int totalCount =
+                countResult.FirstOrDefault();
 
-            IEnumerable<Group> groups = await query
-                .Clone()
-                .Select(
-                    "id",
-                    "prefix",
-                    "number",
-                    "created_at",
-                    "updated_at"
-                ).OrderBy("prefix")
-                .OrderBy("number")
-                .ForPage(
-                    page,
-                    pageSize
-                )
-                .GetAsync<Group>();
+            IEnumerable<Group> groups =
+                await query
+                    .Clone()
+                    .Select(
+                        "id",
+                        "prefix",
+                        "number",
+                        "created_at",
+                        "updated_at"
+                    )
+                    .OrderBy("prefix")
+                    .OrderBy("number")
+                    .ForPage(
+                        page,
+                        pageSize
+                    )
+                    .GetAsync<Group>();
 
             return new PagedResult<Group>
             {

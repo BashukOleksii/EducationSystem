@@ -17,6 +17,7 @@ namespace EducationSystem.Repositories.Interfaces
             int pageSize
         );
 
+        Task<IReadOnlyList<LessonListItem>> GetAllAsync();
         Task<Lesson?> GetByIdAsync(int id);
 
         Task<int> CreateAsync(Lesson lesson);

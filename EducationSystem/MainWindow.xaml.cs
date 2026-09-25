@@ -311,5 +311,73 @@ namespace EducationSystem
                     viewModel
                 );
         }
+
+        private void JournalButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            ShowJournal();
+        }
+
+        private void ShowJournal()
+        {
+            GroupRepository groupRepository =
+                new GroupRepository(
+                    _databaseFactory
+                );
+
+
+            StudentRepository studentRepository =
+                new StudentRepository(
+                    _databaseFactory
+                );
+
+
+            TeacherSubjectRepository teacherSubjectRepository =
+                new TeacherSubjectRepository(
+                    _databaseFactory
+                );
+
+
+            LessonRepository lessonRepository =
+                new LessonRepository(
+                    _databaseFactory
+                );
+
+
+            JournalRepository journalRepository =
+                new JournalRepository(
+                    _databaseFactory
+                );
+
+
+            LessonService lessonService =
+                new LessonService(
+                    lessonRepository,
+                    teacherSubjectRepository,
+                    groupRepository
+                );
+
+
+            JournalService journalService =
+                new JournalService(
+                    journalRepository,
+                    lessonRepository,
+                    studentRepository
+                );
+
+
+            JournalViewModel viewModel =
+                new JournalViewModel(
+                    journalService,
+                    lessonService
+                );
+
+
+            MainContent.Content =
+                new JournalView(
+                    viewModel
+                );
+        }
     }
 }

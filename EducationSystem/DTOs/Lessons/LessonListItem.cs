@@ -48,5 +48,8 @@
             Subgroup.HasValue
                 ? Subgroup.Value.ToString()
                 : "—";
+
+        public string JournalName =>
+         $"{Date:dd.MM.yyyy} | {GroupName} | {SubjectName} | {TeacherFullName}";
     }
 }

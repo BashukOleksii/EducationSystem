@@ -200,7 +200,70 @@ namespace EducationSystem.Repositories
             };
         }
 
+        public async Task<IReadOnlyList<LessonListItem>> GetAllAsync()
+        {
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
+
+            IEnumerable<LessonListItem> lessons =
+                await db
+                    .Query(TableName)
+
+                    .Join(
+                        "teachers_subjects",
+                        "teachers_subjects.id",
+                        "lessons.teacher_id"
+                    )
+
+                    .Join(
+                        "teachers",
+                        "teachers.id",
+                        "teachers_subjects.teacher_id"
+                    )
+
+                    .Join(
+                        "subjects",
+                        "subjects.id",
+                        "teachers_subjects.subject_id"
+                    )
+
+                    .Join(
+                        "groups",
+                        "groups.id",
+                        "lessons.group_id"
+                    )
+
+                    .Select(
+                        "lessons.id",
+                        "lessons.title",
+                        "lessons.date",
+
+                        "lessons.teacher_id as teacher_subject_id",
+                        "lessons.group_id",
+
+                        "teachers.id as teacher_id",
+                        "subjects.id as subject_id",
+
+                        "teachers.first_name as teacher_first_name",
+                        "teachers.last_name as teacher_last_name",
+
+                        "subjects.name as subject_name",
+
+                        "teachers_subjects.subgroup",
+
+                        "groups.prefix as group_prefix",
+                        "groups.number as group_number"
+                    )
+
+                    .OrderByDesc("lessons.date")
+                    .OrderByDesc("lessons.id")
+
+                    .GetAsync<LessonListItem>();
+
+
+            return lessons.ToList();
+        }
         public async Task<Lesson?> GetByIdAsync(
             int id)
         {

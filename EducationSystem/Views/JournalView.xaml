@@ -1,0 +1,324 @@
+﻿<UserControl x:Class="EducationSystem.Views.JournalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Width="712">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <TextBlock
+            Grid.Row="0"
+            Text="Журнал"
+            FontSize="28"
+            FontWeight="SemiBold"
+            Margin="0,0,0,20"/>
+
+
+        <!-- Вибір заняття -->
+
+        <Grid Grid.Row="1"
+              Margin="0,0,0,16">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <TextBlock
+                Grid.Column="0"
+                Text="Заняття:"
+                VerticalAlignment="Center"
+                Margin="0,0,10,0"/>
+
+
+            <ComboBox
+                Grid.Column="1"
+                Height="36"
+                Margin="0,0,10,0"
+                ItemsSource="{Binding Lessons}"
+                SelectedItem="{Binding SelectedLesson}"
+                DisplayMemberPath="JournalName"/>
+
+
+            <Button
+                Grid.Column="2"
+                Content="Відкрити журнал"
+                Width="140"
+                Command="{Binding OpenLessonCommand}"/>
+
+        </Grid>
+
+
+        <!-- Інформація -->
+
+        <Border
+            Grid.Row="2"
+            Background="#F5F5F5"
+            Padding="12"
+            CornerRadius="6"
+            Margin="0,0,0,16">
+
+            <StackPanel Orientation="Horizontal">
+
+                <TextBlock
+                    Text="Група: "
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="{Binding SelectedLesson.GroupName}"
+                    Margin="0,0,20,0"/>
+
+
+                <TextBlock
+                    Text="Предмет: "
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="{Binding SelectedLesson.SubjectName}"
+                    Margin="0,0,20,0"/>
+
+
+                <TextBlock
+                    Text="Дата: "
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="{Binding SelectedLesson.Date,
+                                   StringFormat=dd.MM.yyyy}"/>
+
+            </StackPanel>
+
+        </Border>
+
+
+        <!-- Журнал -->
+
+        <Grid Grid.Row="3">
+
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+
+            <!-- Пошук -->
+
+            <Grid Margin="0,0,0,12">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+
+                <TextBox
+                    Grid.Column="0"
+                    Height="36"
+                    Margin="0,0,12,0"
+                    VerticalContentAlignment="Center"
+                    Text="{Binding SearchText,
+                                   UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                <CheckBox
+                    Grid.Column="1"
+                    Content="Тільки НБ"
+                    Margin="0,0,15,0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding OnlyMissing}"/>
+
+
+                <CheckBox
+                    Grid.Column="2"
+                    Content="Без оцінки"
+                    Margin="0,0,15,0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding OnlyWithoutGrade}"/>
+
+
+                <Button
+                    Grid.Column="3"
+                    Content="Пошук"
+                    Width="90"
+                    Margin="0,0,8,0"
+                    Command="{Binding SearchCommand}"/>
+
+
+                <Button
+                    Grid.Column="4"
+                    Content="Очистити"
+                    Width="90"
+                    Command="{Binding ClearSearchCommand}"/>
+
+            </Grid>
+
+
+            <!-- Таблиця -->
+
+            <DataGrid
+                Grid.Row="1"
+                ItemsSource="{Binding Students}"
+                AutoGenerateColumns="False"
+                CanUserAddRows="False"
+                SelectionMode="Single">
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn
+                        Header="Студент"
+                        Binding="{Binding FullName}"
+                        IsReadOnly="True"
+                        Width="2*"/>
+
+
+                    <DataGridTextColumn
+                        Header="Email"
+                        Binding="{Binding Email}"
+                        IsReadOnly="True"
+                        Width="2*"/>
+
+
+                    <!-- Оцінка -->
+
+                    <DataGridTextColumn
+                        Header="Оцінка"
+                        Width="100"
+                        Binding="{Binding Grade,
+                                          Mode=TwoWay,
+                                          UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                    <!--
+                        true  = missing
+                        false = present
+                        null  = не вказано
+                    -->
+
+                    <DataGridCheckBoxColumn
+                        Header="НБ"
+                        Width="80"
+                        IsThreeState="True"
+                        Binding="{Binding IsMissing,
+                                          Mode=TwoWay,
+                                          UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                    <!-- Збереження одного рядка -->
+
+                    <DataGridTemplateColumn
+                        Header=""
+                        Width="110">
+
+                        <DataGridTemplateColumn.CellTemplate>
+
+                            <DataTemplate>
+
+                                <Button
+                                    Content="Зберегти"
+                                    Margin="4"
+                                    Command="{Binding
+                                        DataContext.SaveEntryCommand,
+                                        RelativeSource={RelativeSource
+                                            AncestorType=DataGrid}}"
+                                    CommandParameter="{Binding}"/>
+
+                            </DataTemplate>
+
+                        </DataGridTemplateColumn.CellTemplate>
+
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+
+        </Grid>
+
+
+        <!-- Нижня панель -->
+
+        <Grid
+            Grid.Row="4"
+            Margin="0,16,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <StackPanel Grid.Column="0">
+
+                <TextBlock>
+
+                    <Run Text="Усього студентів: "/>
+                    <Run Text="{Binding TotalCount}"/>
+
+                </TextBlock>
+
+
+                <TextBlock
+                    Text="{Binding Message}"
+                    Margin="0,5,0,0"/>
+
+            </StackPanel>
+
+
+            <Button
+                Grid.Column="1"
+                Content="Зберегти сторінку"
+                Width="150"
+                Height="34"
+                Margin="0,0,20,0"
+                Command="{Binding SavePageCommand}"/>
+
+
+            <StackPanel
+                Grid.Column="2"
+                Orientation="Horizontal">
+
+                <Button
+                    Content="←"
+                    Width="40"
+                    Height="32"
+                    Command="{Binding PreviousPageCommand}"/>
+
+
+                <TextBlock
+                    Margin="12,0"
+                    VerticalAlignment="Center">
+
+                    <Run Text="Сторінка "/>
+                    <Run Text="{Binding CurrentPage}"/>
+                    <Run Text=" з "/>
+                    <Run Text="{Binding TotalPages}"/>
+
+                </TextBlock>
+
+
+                <Button
+                    Content="→"
+                    Width="40"
+                    Height="32"
+                    Command="{Binding NextPageCommand}"/>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

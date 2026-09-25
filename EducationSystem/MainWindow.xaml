@@ -69,7 +69,7 @@
                 <Button
     Content="Журнал"
     Height="42"
-    IsEnabled="False"/>
+    Click="JournalButton_Click"/>
 
             </StackPanel>
 

@@ -31,45 +31,45 @@
                     Margin="8,8,8,24"/>
 
                 <Button
-                    Content="Групи"
-                    Height="42"
-                    Margin="0,0,0,8"
-                    Click="GroupsButton_Click"/>
+    Content="Групи"
+    Height="42"
+    Margin="0,0,0,8"
+    Click="GroupsButton_Click"/>
 
                 <Button
-                    Content="Предмети"
-                    Height="42"
-                    Margin="0,0,0,8"
-                    Click="SubjectsButton_Click"/>          
+    Content="Предмети"
+    Height="42"
+    Margin="0,0,0,8"
+    Click="SubjectsButton_Click"/>
 
                 <Button
-                    Content="Викладачі"
-                    Height="42"
-                    Margin="0,0,0,8"
-                    IsEnabled="False"/>
+    Content="Викладачі"
+    Height="42"
+    Margin="0,0,0,8"
+    Click="TeachersButton_Click"/>
 
                 <Button
-                    Content="Предмети"
-                    Height="42"
-                    Margin="0,0,0,8"
-                    IsEnabled="False"/>
+    Content="Студенти"
+    Height="42"
+    Margin="0,0,0,8"
+    IsEnabled="False"/>
 
                 <Button
-                    Content="Викладачі та предмети"
-                    Height="42"
-                    Margin="0,0,0,8"
-                    IsEnabled="False"/>
+    Content="Викладачі та предмети"
+    Height="42"
+    Margin="0,0,0,8"
+    IsEnabled="False"/>
 
                 <Button
-                    Content="Заняття"
-                    Height="42"
-                    Margin="0,0,0,8"
-                    IsEnabled="False"/>
+    Content="Заняття"
+    Height="42"
+    Margin="0,0,0,8"
+    IsEnabled="False"/>
 
                 <Button
-                    Content="Журнал"
-                    Height="42"
-                    IsEnabled="False"/>
+    Content="Журнал"
+    Height="42"
+    IsEnabled="False"/>
 
             </StackPanel>
 

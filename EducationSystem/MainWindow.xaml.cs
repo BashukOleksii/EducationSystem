@@ -82,5 +82,35 @@ namespace EducationSystem
                     viewModel
                 );
         }
+
+        private void TeachersButton_Click(
+           object sender,
+           RoutedEventArgs e)
+        {
+            ShowTeachers();
+        }
+
+        private void ShowTeachers()
+        {
+            TeacherRepository repository =
+                new TeacherRepository(
+                    _databaseFactory
+                );
+
+            TeacherService service =
+                new TeacherService(
+                    repository
+                );
+
+            TeachersViewModel viewModel =
+                new TeachersViewModel(
+                    service
+                );
+
+            MainContent.Content =
+                new TeachersView(
+                    viewModel
+                );
+        }
     }
 }

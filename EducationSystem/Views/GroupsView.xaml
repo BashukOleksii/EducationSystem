@@ -1,0 +1,205 @@
+﻿<UserControl
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="EducationSystem.Views.GroupsView"
+             d:DesignWidth="974.605">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Заголовок -->
+        <TextBlock
+            Grid.Row="0"
+            Text="Групи"
+            FontSize="28"
+            FontWeight="SemiBold"
+            Margin="0,0,0,20"/>
+
+        <!-- Пошук -->
+        <Grid
+            Grid.Row="1"
+            Margin="0,0,0,16">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBox
+                Grid.Column="0"
+                Height="36"
+                Margin="0,0,8,0"
+                VerticalContentAlignment="Center"
+                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+
+            <Button
+                Grid.Column="1"
+                Content="Пошук"
+                Width="100"
+                Margin="0,0,8,0"
+                Command="{Binding SearchCommand}"/>
+
+            <Button
+                Grid.Column="2"
+                Content="Очистити"
+                Width="100"
+                Command="{Binding ClearSearchCommand}"/>
+
+        </Grid>
+
+        <!-- Основна область -->
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Таблиця -->
+            <DataGrid
+                Grid.Column="0"
+                ItemsSource="{Binding Groups}"
+                SelectedItem="{Binding SelectedGroup}"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn
+                        Header="ID"
+                        Binding="{Binding Id}"
+                        Width="70"/>
+
+                    <DataGridTextColumn
+                        Header="Префікс"
+                        Binding="{Binding Prefix}"
+                        Width="*"/>
+
+                    <DataGridTextColumn
+                        Header="Номер"
+                        Binding="{Binding Number}"
+                        Width="*"/>
+
+                    <DataGridTextColumn
+                        Header="Група"
+                        Binding="{Binding Name}"
+                        Width="*"/>
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+
+            <!-- Форма -->
+            <Border
+                Grid.Column="2"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="20">
+
+                <StackPanel>
+
+                    <TextBlock
+                        Text="Редагування"
+                        FontSize="20"
+                        FontWeight="SemiBold"
+                        Margin="0,0,0,20"/>
+
+                    <TextBlock
+                        Text="Префікс"
+                        Margin="0,0,0,4"/>
+
+                    <TextBox
+                        Height="34"
+                        Margin="0,0,0,14"
+                        VerticalContentAlignment="Center"
+                        Text="{Binding Prefix, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <TextBlock
+                        Text="Номер"
+                        Margin="0,0,0,4"/>
+
+                    <TextBox
+                        Height="34"
+                        Margin="0,0,0,20"
+                        VerticalContentAlignment="Center"
+                        Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}"/>
+
+                    <Button
+                        Content="Зберегти"
+                        Height="36"
+                        Margin="0,0,0,8"
+                        Command="{Binding SaveCommand}"/>
+
+                    <Button
+                        Content="Нова група"
+                        Height="36"
+                        Margin="0,0,0,8"
+                        Command="{Binding NewCommand}"/>
+
+                    <Button
+                        Content="Видалити"
+                        Height="36"
+                        Command="{Binding DeleteCommand}"/>
+
+                    <TextBlock
+                        Text="{Binding Message}"
+                        TextWrapping="Wrap"
+                        Margin="0,20,0,0"/>
+
+                </StackPanel>
+
+            </Border>
+
+        </Grid>
+
+        <!-- Пагінація -->
+        <Grid
+            Grid.Row="3"
+            Margin="0,16,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center"><Run Text="Усього записів: "/><Run Text=" "/><Run Text="{Binding TotalCount}"/></TextBlock>
+
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal">
+
+                <Button
+                    Content="←"
+                    Width="40"
+                    Height="32"
+                    Command="{Binding PreviousPageCommand}"/>
+
+                <TextBlock
+                    Margin="12,0"
+                    VerticalAlignment="Center"><Run Text="Сторінка "/><Run Text=" "/><Run Text="{Binding CurrentPage}"/><Run Text=" "/><Run Text=" з "/><Run Text=" "/><Run Text="{Binding TotalPages}"/></TextBlock>
+
+                <Button
+                    Content="→"
+                    Width="40"
+                    Height="32"
+                    Command="{Binding NextPageCommand}"/>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

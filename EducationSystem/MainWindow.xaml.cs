@@ -1,24 +1,53 @@
-﻿using System.Text;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+﻿using System.Windows;
+using EducationSystem.Data;
+using EducationSystem.Repositories;
+using EducationSystem.Services;
+using EducationSystem.ViewModels;
+using EducationSystem.Views;
 
-namespace EducationSystem
+namespace EducationSystem;
+
+public partial class MainWindow : Window
 {
-    /// <summary>
-    /// Interaction logic for MainWindow.xaml
-    /// </summary>
-    public partial class MainWindow : Window
+    private readonly DatabaseConnectionFactory _databaseFactory;
+
+    public MainWindow(
+        DatabaseConnectionFactory databaseFactory)
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
+        InitializeComponent();
+
+        _databaseFactory = databaseFactory;
+
+        ShowGroups();
+    }
+
+    private void GroupsButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        ShowGroups();
+    }
+
+    private void ShowGroups()
+    {
+        GroupRepository repository =
+            new GroupRepository(
+                _databaseFactory
+            );
+
+        GroupService service =
+            new GroupService(
+                repository
+            );
+
+        GroupsViewModel viewModel =
+            new GroupsViewModel(
+                service
+            );
+
+        MainContent.Content =
+            new GroupsView(
+                viewModel
+            );
     }
 }

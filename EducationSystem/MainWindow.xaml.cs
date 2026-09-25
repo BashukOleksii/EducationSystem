@@ -5,49 +5,82 @@ using EducationSystem.Services;
 using EducationSystem.ViewModels;
 using EducationSystem.Views;
 
-namespace EducationSystem;
-
-public partial class MainWindow : Window
+namespace EducationSystem
 {
-    private readonly DatabaseConnectionFactory _databaseFactory;
-
-    public MainWindow(
-        DatabaseConnectionFactory databaseFactory)
+    public partial class MainWindow : Window
     {
-        InitializeComponent();
+        private readonly DatabaseConnectionFactory _databaseFactory;
 
-        _databaseFactory = databaseFactory;
+        public MainWindow(
+            DatabaseConnectionFactory databaseFactory)
+        {
+            InitializeComponent();
 
-        ShowGroups();
-    }
+            _databaseFactory =
+                databaseFactory;
 
-    private void GroupsButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        ShowGroups();
-    }
+            ShowGroups();
+        }
 
-    private void ShowGroups()
-    {
-        GroupRepository repository =
-            new GroupRepository(
-                _databaseFactory
-            );
+        private void GroupsButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            ShowGroups();
+        }
 
-        GroupService service =
-            new GroupService(
-                repository
-            );
+        private void ShowGroups()
+        {
+            GroupRepository repository =
+                new GroupRepository(
+                    _databaseFactory
+                );
 
-        GroupsViewModel viewModel =
-            new GroupsViewModel(
-                service
-            );
+            GroupService service =
+                new GroupService(
+                    repository
+                );
 
-        MainContent.Content =
-            new GroupsView(
-                viewModel
-            );
+            GroupsViewModel viewModel =
+                new GroupsViewModel(
+                    service
+                );
+
+            MainContent.Content =
+                new GroupsView(
+                    viewModel
+                );
+        }
+
+
+        private void SubjectsButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            ShowSubjects();
+        }
+
+        private void ShowSubjects()
+        {
+            SubjectRepository repository =
+                new SubjectRepository(
+                    _databaseFactory
+                );
+
+            SubjectService service =
+                new SubjectService(
+                    repository
+                );
+
+            SubjectsViewModel viewModel =
+                new SubjectsViewModel(
+                    service
+                );
+
+            MainContent.Content =
+                new SubjectsView(
+                    viewModel
+                );
+        }
     }
 }

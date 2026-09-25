@@ -37,10 +37,10 @@
                     Click="GroupsButton_Click"/>
 
                 <Button
-                    Content="Студенти"
+                    Content="Предмети"
                     Height="42"
                     Margin="0,0,0,8"
-                    IsEnabled="False"/>
+                    Click="SubjectsButton_Click"/>          
 
                 <Button
                     Content="Викладачі"

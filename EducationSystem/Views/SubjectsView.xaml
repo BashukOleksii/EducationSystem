@@ -1,7 +1,10 @@
-﻿<UserControl
+﻿<UserControl x:Class="EducationSystem.Views.SubjectsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="EducationSystem.Views.GroupsView"
-             d:DesignWidth="974.605">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="975">
 
     <Grid Margin="24">
 
@@ -13,14 +16,17 @@
         </Grid.RowDefinitions>
 
         <!-- Заголовок -->
+
         <TextBlock
             Grid.Row="0"
-            Text="Групи"
+            Text="Предмети"
             FontSize="28"
             FontWeight="SemiBold"
             Margin="0,0,0,20"/>
 
+
         <!-- Пошук -->
+
         <Grid
             Grid.Row="1"
             Margin="0,0,0,16">
@@ -36,7 +42,8 @@
                 Height="36"
                 Margin="0,0,8,0"
                 VerticalContentAlignment="Center"
-                Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"/>
+                Text="{Binding SearchText,
+                               UpdateSourceTrigger=PropertyChanged}"/>
 
             <Button
                 Grid.Column="1"
@@ -53,7 +60,9 @@
 
         </Grid>
 
-        <!-- Основна область -->
+
+        <!-- Основна частина -->
+
         <Grid Grid.Row="2">
 
             <Grid.ColumnDefinitions>
@@ -62,11 +71,13 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <!-- Таблиця -->
+
+            <!-- Таблиця предметів -->
+
             <DataGrid
                 Grid.Column="0"
-                ItemsSource="{Binding Groups}"
-                SelectedItem="{Binding SelectedGroup}"
+                ItemsSource="{Binding Subjects}"
+                SelectedItem="{Binding SelectedSubject}"
                 AutoGenerateColumns="False"
                 IsReadOnly="True"
                 SelectionMode="Single"
@@ -80,25 +91,22 @@
                         Width="70"/>
 
                     <DataGridTextColumn
-                        Header="Префікс"
-                        Binding="{Binding Prefix}"
-                        Width="*"/>
-
-                    <DataGridTextColumn
-                        Header="Номер"
-                        Binding="{Binding Number}"
-                        Width="*"/>
-
-                    <DataGridTextColumn
-                        Header="Група"
+                        Header="Назва"
                         Binding="{Binding Name}"
                         Width="*"/>
+
+                    <DataGridTextColumn
+                        Header="Тривалість"
+                        Binding="{Binding Duration}"
+                        Width="150"/>
 
                 </DataGrid.Columns>
 
             </DataGrid>
 
+
             <!-- Форма -->
+
             <Border
                 Grid.Column="2"
                 BorderBrush="#DDDDDD"
@@ -109,30 +117,35 @@
                 <StackPanel>
 
                     <TextBlock
-                        Text="Редагування"
+                        Text="Предмет"
                         FontSize="20"
                         FontWeight="SemiBold"
                         Margin="0,0,0,20"/>
 
+
                     <TextBlock
-                        Text="Префікс"
+                        Text="Назва"
                         Margin="0,0,0,4"/>
 
                     <TextBox
                         Height="34"
                         Margin="0,0,0,14"
                         VerticalContentAlignment="Center"
-                        Text="{Binding Prefix, UpdateSourceTrigger=PropertyChanged}"/>
+                        Text="{Binding Name,
+                               UpdateSourceTrigger=PropertyChanged}"/>
+
 
                     <TextBlock
-                        Text="Номер"
+                        Text="Тривалість"
                         Margin="0,0,0,4"/>
 
                     <TextBox
                         Height="34"
                         Margin="0,0,0,20"
                         VerticalContentAlignment="Center"
-                        Text="{Binding Number, UpdateSourceTrigger=PropertyChanged}"/>
+                        Text="{Binding Duration,
+                               UpdateSourceTrigger=PropertyChanged}"/>
+
 
                     <Button
                         Content="Зберегти"
@@ -151,6 +164,7 @@
                         Height="36"
                         Command="{Binding DeleteCommand}"/>
 
+
                     <TextBlock
                         Text="{Binding Message}"
                         TextWrapping="Wrap"
@@ -162,7 +176,9 @@
 
         </Grid>
 
+
         <!-- Пагінація -->
+
         <Grid
             Grid.Row="3"
             Margin="0,16,0,0">
@@ -172,9 +188,17 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
+
             <TextBlock
                 Grid.Column="0"
-                VerticalAlignment="Center"><Run Text="Усього записів: "/><Run Text=" "/><Run Text="{Binding TotalCount}"/></TextBlock>
+                VerticalAlignment="Center">
+
+                <Run Text="Усього записів: "/>
+
+                <Run Text="{Binding TotalCount}"/>
+
+            </TextBlock>
+
 
             <StackPanel
                 Grid.Column="1"
@@ -188,7 +212,17 @@
 
                 <TextBlock
                     Margin="12,0"
-                    VerticalAlignment="Center"><Run Text="Сторінка "/><Run Text=" "/><Run Text="{Binding CurrentPage}"/><Run Text=" "/><Run Text=" з "/><Run Text=" "/><Run Text="{Binding TotalPages}"/></TextBlock>
+                    VerticalAlignment="Center">
+
+                    <Run Text="Сторінка "/>
+
+                    <Run Text="{Binding CurrentPage}"/>
+
+                    <Run Text=" з "/>
+
+                    <Run Text="{Binding TotalPages}"/>
+
+                </TextBlock>
 
                 <Button
                     Content="→"

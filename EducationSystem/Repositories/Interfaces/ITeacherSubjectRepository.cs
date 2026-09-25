@@ -16,6 +16,7 @@ namespace EducationSystem.Repositories.Interfaces
 
         Task<TeacherSubject?> GetByIdAsync(int id);
 
+        Task<IReadOnlyList<TeacherSubjectListItem>> GetAllAsync();
         Task<bool> ExistsAsync(
             int teacherId,
             int subjectId,

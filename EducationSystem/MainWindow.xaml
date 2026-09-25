@@ -64,7 +64,7 @@
     Content="Заняття"
     Height="42"
     Margin="0,0,0,8"
-    IsEnabled="False"/>
+    Click="LessonsButton_Click"/>
 
                 <Button
     Content="Журнал"

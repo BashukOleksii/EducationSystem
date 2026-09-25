@@ -1,0 +1,389 @@
+﻿<UserControl x:Class="EducationSystem.Views.LessonsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <TextBlock
+            Grid.Row="0"
+            Text="Заняття"
+            FontSize="28"
+            FontWeight="SemiBold"
+            Margin="0,0,0,20"/>
+
+
+        <!-- Пошук і фільтри -->
+
+        <StackPanel
+            Grid.Row="1"
+            Margin="0,0,0,16">
+
+
+            <Grid Margin="0,0,0,10">
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+
+                <TextBox
+                    Grid.Column="0"
+                    Height="36"
+                    Margin="0,0,8,0"
+                    VerticalContentAlignment="Center"
+                    Text="{Binding SearchText,
+                                   UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                <Button
+                    Grid.Column="1"
+                    Content="Пошук"
+                    Width="100"
+                    Margin="0,0,8,0"
+                    Command="{Binding SearchCommand}"/>
+
+
+                <Button
+                    Grid.Column="2"
+                    Content="Очистити"
+                    Width="100"
+                    Command="{Binding ClearSearchCommand}"/>
+
+            </Grid>
+
+
+            <WrapPanel>
+
+                <!-- Викладач -->
+
+                <CheckBox
+                    Content="Викладач"
+                    Margin="0,0,6,0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding IsTeacherFilterEnabled}"/>
+
+                <ComboBox
+                    Width="180"
+                    Height="34"
+                    Margin="0,0,14,0"
+                    ItemsSource="{Binding Teachers}"
+                    SelectedItem="{Binding FilterTeacher}"
+                    DisplayMemberPath="FullName"
+                    IsEnabled="{Binding IsTeacherFilterEnabled}"/>
+
+
+                <!-- Предмет -->
+
+                <CheckBox
+                    Content="Предмет"
+                    Margin="0,0,6,0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding IsSubjectFilterEnabled}"/>
+
+                <ComboBox
+                    Width="180"
+                    Height="34"
+                    Margin="0,0,14,0"
+                    ItemsSource="{Binding Subjects}"
+                    SelectedItem="{Binding FilterSubject}"
+                    DisplayMemberPath="Name"
+                    IsEnabled="{Binding IsSubjectFilterEnabled}"/>
+
+
+                <!-- Група -->
+
+                <CheckBox
+                    Content="Група"
+                    Margin="0,0,6,0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding IsGroupFilterEnabled}"/>
+
+                <ComboBox
+                    Width="110"
+                    Height="34"
+                    Margin="0,0,14,0"
+                    ItemsSource="{Binding Groups}"
+                    SelectedItem="{Binding FilterGroup}"
+                    DisplayMemberPath="Name"
+                    IsEnabled="{Binding IsGroupFilterEnabled}"/>
+
+            </WrapPanel>
+
+
+            <WrapPanel Margin="0,10,0,0">
+
+                <CheckBox
+                    Content="Період"
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    IsChecked="{Binding IsDateFilterEnabled}"/>
+
+
+                <TextBlock
+                    Text="Від:"
+                    Margin="0,0,5,0"
+                    VerticalAlignment="Center"/>
+
+                <DatePicker
+                    Width="130"
+                    Margin="0,0,10,0"
+                    SelectedDate="{Binding FromDate}"
+                    IsEnabled="{Binding IsDateFilterEnabled}"/>
+
+
+                <TextBlock
+                    Text="До:"
+                    Margin="0,0,5,0"
+                    VerticalAlignment="Center"/>
+
+                <DatePicker
+                    Width="130"
+                    SelectedDate="{Binding ToDate}"
+                    IsEnabled="{Binding IsDateFilterEnabled}"/>
+
+            </WrapPanel>
+
+        </StackPanel>
+
+
+        <!-- Основна область -->
+
+        <Grid Grid.Row="2">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="20"/>
+                <ColumnDefinition Width="340"/>
+            </Grid.ColumnDefinitions>
+
+
+            <DataGrid
+                Grid.Column="0"
+                ItemsSource="{Binding Lessons}"
+                SelectedItem="{Binding SelectedLesson}"
+                AutoGenerateColumns="False"
+                IsReadOnly="True"
+                SelectionMode="Single"
+                SelectionUnit="FullRow">
+
+                <DataGrid.Columns>
+
+                    <DataGridTextColumn
+                        Header="Дата"
+                        Binding="{Binding Date,
+                                          StringFormat=dd.MM.yyyy}"
+                        Width="100"/>
+
+
+                    <DataGridTextColumn
+                        Header="Викладач"
+                        Binding="{Binding TeacherFullName}"
+                        Width="*"/>
+
+
+                    <DataGridTextColumn
+                        Header="Предмет"
+                        Binding="{Binding SubjectName}"
+                        Width="*"/>
+
+
+                    <DataGridTextColumn
+                        Header="Група"
+                        Binding="{Binding GroupName}"
+                        Width="90"/>
+
+
+                    <DataGridTextColumn
+                        Header="Підгр."
+                        Binding="{Binding SubgroupText}"
+                        Width="65"/>
+
+
+                    <DataGridTextColumn
+                        Header="Тема"
+                        Binding="{Binding Title}"
+                        Width="1.5*"/>
+
+                </DataGrid.Columns>
+
+            </DataGrid>
+
+
+            <!-- Форма -->
+
+            <Border
+                Grid.Column="2"
+                BorderBrush="#DDDDDD"
+                BorderThickness="1"
+                CornerRadius="8"
+                Padding="20">
+
+                <ScrollViewer
+                    VerticalScrollBarVisibility="Auto">
+
+                    <StackPanel>
+
+                        <TextBlock
+                            Text="Заняття"
+                            FontSize="20"
+                            FontWeight="SemiBold"
+                            Margin="0,0,0,20"/>
+
+
+                        <TextBlock
+                            Text="Викладач / предмет"
+                            Margin="0,0,0,4"/>
+
+
+                        <ComboBox
+                            Height="34"
+                            Margin="0,0,0,14"
+                            ItemsSource="{Binding TeacherSubjects}"
+                            SelectedItem="{Binding SelectedTeacherSubject}"
+                            DisplayMemberPath="AssignmentName"/>
+
+
+                        <TextBlock
+                            Text="Група"
+                            Margin="0,0,0,4"/>
+
+
+                        <ComboBox
+                            Height="34"
+                            Margin="0,0,0,14"
+                            ItemsSource="{Binding Groups}"
+                            SelectedItem="{Binding SelectedGroup}"
+                            DisplayMemberPath="Name"/>
+
+
+                        <TextBlock
+                            Text="Дата"
+                            Margin="0,0,0,4"/>
+
+
+                        <DatePicker
+                            Height="34"
+                            Margin="0,0,0,14"
+                            SelectedDate="{Binding LessonDate}"/>
+
+
+                        <TextBlock
+                            Text="Тема заняття"
+                            Margin="0,0,0,4"/>
+
+
+                        <TextBox
+                            MinHeight="70"
+                            Margin="0,0,0,20"
+                            TextWrapping="Wrap"
+                            AcceptsReturn="True"
+                            VerticalScrollBarVisibility="Auto"
+                            Text="{Binding Title,
+                                           UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                        <Button
+                            Content="Зберегти"
+                            Height="36"
+                            Margin="0,0,0,8"
+                            Command="{Binding SaveCommand}"/>
+
+
+                        <Button
+                            Content="Очистити"
+                            Height="36"
+                            Margin="0,0,0,8"
+                            Command="{Binding NewCommand}"/>
+
+
+                        <Button
+                            Content="Видалити"
+                            Height="36"
+                            Command="{Binding DeleteCommand}"/>
+
+
+                        <TextBlock
+                            Text="{Binding Message}"
+                            TextWrapping="Wrap"
+                            Margin="0,20,0,0"/>
+
+                    </StackPanel>
+
+                </ScrollViewer>
+
+            </Border>
+
+        </Grid>
+
+
+        <!-- Пагінація -->
+
+        <Grid
+            Grid.Row="3"
+            Margin="0,16,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <TextBlock
+                Grid.Column="0"
+                VerticalAlignment="Center">
+
+                <Run Text="Усього записів: "/>
+                <Run Text="{Binding TotalCount}"/>
+
+            </TextBlock>
+
+
+            <StackPanel
+                Grid.Column="1"
+                Orientation="Horizontal">
+
+                <Button
+                    Content="←"
+                    Width="40"
+                    Height="32"
+                    Command="{Binding PreviousPageCommand}"/>
+
+
+                <TextBlock
+                    Margin="12,0"
+                    VerticalAlignment="Center">
+
+                    <Run Text="Сторінка "/>
+                    <Run Text="{Binding CurrentPage}"/>
+                    <Run Text=" з "/>
+                    <Run Text="{Binding TotalPages}"/>
+
+                </TextBlock>
+
+
+                <Button
+                    Content="→"
+                    Width="40"
+                    Height="32"
+                    Command="{Binding NextPageCommand}"/>
+
+            </StackPanel>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

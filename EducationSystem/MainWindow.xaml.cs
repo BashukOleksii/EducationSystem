@@ -222,5 +222,94 @@ namespace EducationSystem
                     viewModel
                 );
         }
+
+        private void LessonsButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            ShowLessons();
+        }
+
+        private void ShowLessons()
+        {
+            TeacherRepository teacherRepository =
+                new TeacherRepository(
+                    _databaseFactory
+                );
+
+
+            SubjectRepository subjectRepository =
+                new SubjectRepository(
+                    _databaseFactory
+                );
+
+
+            GroupRepository groupRepository =
+                new GroupRepository(
+                    _databaseFactory
+                );
+
+
+            TeacherSubjectRepository teacherSubjectRepository =
+                new TeacherSubjectRepository(
+                    _databaseFactory
+                );
+
+
+            LessonRepository lessonRepository =
+                new LessonRepository(
+                    _databaseFactory
+                );
+
+
+            TeacherService teacherService =
+                new TeacherService(
+                    teacherRepository
+                );
+
+
+            SubjectService subjectService =
+                new SubjectService(
+                    subjectRepository
+                );
+
+
+            GroupService groupService =
+                new GroupService(
+                    groupRepository
+                );
+
+
+            TeacherSubjectService teacherSubjectService =
+                new TeacherSubjectService(
+                    teacherSubjectRepository,
+                    teacherRepository,
+                    subjectRepository
+                );
+
+
+            LessonService lessonService =
+                new LessonService(
+                    lessonRepository,
+                    teacherSubjectRepository,
+                    groupRepository
+                );
+
+
+            LessonsViewModel viewModel =
+                new LessonsViewModel(
+                    lessonService,
+                    teacherSubjectService,
+                    teacherService,
+                    subjectService,
+                    groupService
+                );
+
+
+            MainContent.Content =
+                new LessonsView(
+                    viewModel
+                );
+        }
     }
 }

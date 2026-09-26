@@ -23,14 +23,11 @@ namespace EducationSystem.Repositories
 
 
         public async Task<PagedResult<JournalStudentItem>>
-            GetPagedAsync(
-                int lessonId,
-                int groupId,
-                string? search,
-                bool onlyMissing,
-                bool onlyWithoutGrade,
-                int page,
-                int pageSize)
+     GetPagedAsync(
+         int lessonId,
+         int groupId,
+         int page,
+         int pageSize)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -72,63 +69,6 @@ namespace EducationSystem.Repositories
                     );
 
 
-            if (!string.IsNullOrWhiteSpace(search))
-            {
-                string[] parts =
-                    search
-                        .Trim()
-                        .Split(
-                            ' ',
-                            StringSplitOptions.RemoveEmptyEntries
-                        );
-
-
-                foreach (string part in parts)
-                {
-                    string value =
-                        part;
-
-
-                    query.Where(q =>
-                    {
-                        q.WhereContains(
-                            "students.first_name",
-                            value
-                        );
-
-                        q.OrWhereContains(
-                            "students.last_name",
-                            value
-                        );
-
-                        q.OrWhereContains(
-                            "students.email",
-                            value
-                        );
-
-                        return q;
-                    });
-                }
-            }
-
-
-            if (onlyMissing)
-            {
-                query.Where(
-                    "attendance.status",
-                    "missing"
-                );
-            }
-
-
-            if (onlyWithoutGrade)
-            {
-                query.WhereNull(
-                    "grades.id"
-                );
-            }
-
-
             IEnumerable<int> countResult =
                 await query
                     .Clone()
@@ -139,11 +79,9 @@ namespace EducationSystem.Repositories
             int totalCount =
                 countResult.FirstOrDefault();
 
-
             IEnumerable<JournalStudentItem> result =
                 await query
                     .Clone()
-
                     .Select(
                         "students.id as student_id",
                         "students.first_name",
@@ -154,26 +92,22 @@ namespace EducationSystem.Repositories
 
                         "attendance.status as attendance_status_value"
                     )
-
                     .OrderBy(
                         "students.last_name"
                     )
-
                     .OrderBy(
                         "students.first_name"
                     )
-
                     .ForPage(
                         page,
                         pageSize
                     )
-
                     .GetAsync<JournalStudentItem>();
 
 
             List<JournalStudentItem> items =
                 result.ToList();
-
+            
             foreach (JournalStudentItem item in items)
             {
                 item.IsMissing =
@@ -188,17 +122,10 @@ namespace EducationSystem.Repositories
 
             return new PagedResult<JournalStudentItem>
             {
-                Items =
-                    items,
-
-                TotalCount =
-                    totalCount,
-
-                Page =
-                    page,
-
-                PageSize =
-                    pageSize
+                Items = items,
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
             };
         }
 

@@ -35,13 +35,10 @@ namespace EducationSystem.Services
 
 
         public async Task<PagedResult<JournalStudentItem>>
-            GetPagedAsync(
-                int lessonId,
-                string? search,
-                bool onlyMissing,
-                bool onlyWithoutGrade,
-                int page,
-                int pageSize)
+      GetPagedAsync(
+          int lessonId,
+          int page,
+          int pageSize)
         {
             if (page < 1)
             {
@@ -74,9 +71,6 @@ namespace EducationSystem.Services
                 .GetPagedAsync(
                     lessonId,
                     lesson.GroupId,
-                    search,
-                    onlyMissing,
-                    onlyWithoutGrade,
                     page,
                     pageSize
                 );

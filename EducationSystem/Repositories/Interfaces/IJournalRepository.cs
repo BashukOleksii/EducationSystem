@@ -9,9 +9,6 @@ namespace EducationSystem.Repositories.Interfaces
         Task<PagedResult<JournalStudentItem>> GetPagedAsync(
             int lessonId,
             int groupId,
-            string? search,
-            bool onlyMissing,
-            bool onlyWithoutGrade,
             int page,
             int pageSize
         );

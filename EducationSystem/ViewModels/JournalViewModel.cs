@@ -11,11 +11,9 @@ namespace EducationSystem.ViewModels
     public partial class JournalViewModel
         : ObservableObject
     {
-        private readonly JournalService
-            _journalService;
+        private readonly JournalService _journalService;
 
-        private readonly LessonService
-            _lessonService;
+        private readonly LessonService _lessonService;
 
 
         public JournalViewModel(
@@ -28,36 +26,16 @@ namespace EducationSystem.ViewModels
             _lessonService =
                 lessonService;
         }
+        
+        public ObservableCollection<LessonListItem> Lessons { get; }
+            = new();
 
-
-        public ObservableCollection<LessonListItem>
-            Lessons
-        { get; } = new();
-
-
-        public ObservableCollection<JournalStudentItem>
-            Students
-        { get; } = new();
+        public ObservableCollection<JournalStudentItem> Students { get; }
+            = new();
 
 
         [ObservableProperty]
         private LessonListItem? selectedLesson;
-
-
-        [ObservableProperty]
-        private string searchText =
-            string.Empty;
-
-
-        /*
-         * Додаткові фільтри.
-         */
-        [ObservableProperty]
-        private bool onlyMissing;
-
-
-        [ObservableProperty]
-        private bool onlyWithoutGrade;
 
 
         [ObservableProperty]
@@ -71,7 +49,6 @@ namespace EducationSystem.ViewModels
         [ObservableProperty]
         private int totalCount;
 
-
         [ObservableProperty]
         private bool isLoading;
 
@@ -80,8 +57,7 @@ namespace EducationSystem.ViewModels
         private string message =
             string.Empty;
 
-
-        public int PageSize { get; } = 10;
+        public int PageSize { get; } = 20;
 
 
         [RelayCommand]
@@ -108,12 +84,8 @@ namespace EducationSystem.ViewModels
                     );
                 }
 
-
-                if (SelectedLesson is null)
-                {
-                    SelectedLesson =
-                        Lessons.FirstOrDefault();
-                }
+                SelectedLesson ??=
+                    Lessons.FirstOrDefault();
 
 
                 if (SelectedLesson is not null)
@@ -133,7 +105,6 @@ namespace EducationSystem.ViewModels
             }
         }
 
-
         [RelayCommand]
         private async Task OpenLessonAsync()
         {
@@ -144,49 +115,17 @@ namespace EducationSystem.ViewModels
             await LoadJournalAsync();
         }
 
-
-        [RelayCommand]
-        private async Task SearchAsync()
-        {
-            CurrentPage =
-                1;
-
-
-            await LoadJournalAsync();
-        }
-
-
-        [RelayCommand]
-        private async Task ClearSearchAsync()
-        {
-            SearchText =
-                string.Empty;
-
-
-            OnlyMissing =
-                false;
-
-
-            OnlyWithoutGrade =
-                false;
-
-
-            CurrentPage =
-                1;
-
-
-            await LoadJournalAsync();
-        }
-
-
         private async Task LoadJournalAsync()
         {
             if (SelectedLesson is null)
             {
                 Students.Clear();
 
-                TotalCount = 0;
-                TotalPages = 1;
+                TotalCount =
+                    0;
+
+                TotalPages =
+                    1;
 
                 return;
             }
@@ -206,9 +145,6 @@ namespace EducationSystem.ViewModels
                     await _journalService
                         .GetPagedAsync(
                             SelectedLesson.Id,
-                            SearchText,
-                            OnlyMissing,
-                            OnlyWithoutGrade,
                             CurrentPage,
                             PageSize
                         );
@@ -221,7 +157,9 @@ namespace EducationSystem.ViewModels
                     JournalStudentItem student
                     in result.Items)
                 {
-                    Students.Add(student);
+                    Students.Add(
+                        student
+                    );
                 }
 
 
@@ -234,7 +172,6 @@ namespace EducationSystem.ViewModels
                         1,
                         result.TotalPages
                     );
-
 
                 if (CurrentPage > TotalPages)
                 {
@@ -256,7 +193,6 @@ namespace EducationSystem.ViewModels
                     false;
             }
         }
-
 
         [RelayCommand]
         private async Task SaveEntryAsync(
@@ -291,7 +227,6 @@ namespace EducationSystem.ViewModels
                     exception.Message;
             }
         }
-
 
         [RelayCommand]
         private async Task SavePageAsync()

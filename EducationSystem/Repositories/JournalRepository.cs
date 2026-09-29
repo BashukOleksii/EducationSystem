@@ -107,16 +107,11 @@ namespace EducationSystem.Repositories
 
             List<JournalStudentItem> items =
                 result.ToList();
-            
+
             foreach (JournalStudentItem item in items)
             {
                 item.IsMissing =
-                    item.AttendanceStatusValue switch
-                    {
-                        "missing" => true,
-                        "present" => false,
-                        _ => null
-                    };
+                    item.AttendanceStatusValue == "missing";
             }
 
 

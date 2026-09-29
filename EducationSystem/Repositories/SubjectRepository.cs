@@ -10,11 +10,9 @@ namespace EducationSystem.Repositories
     public sealed class SubjectRepository : ISubjectRepository
     {
         private readonly DatabaseConnectionFactory _connectionFactory;
-
         private const string TableName = "subjects";
 
-        public SubjectRepository(
-            DatabaseConnectionFactory connectionFactory)
+        public SubjectRepository(DatabaseConnectionFactory connectionFactory)
         {
             _connectionFactory = connectionFactory;
         }
@@ -28,15 +26,14 @@ namespace EducationSystem.Repositories
                 _connectionFactory.CreateQueryFactory();
 
             Query query =
-                db.Query(TableName);
+                db.Query(TableName)
+                    .Where("is_active", true);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
-                string value = search.Trim();
-
                 query.WhereContains(
                     "name",
-                    value
+                    search.Trim()
                 );
             }
 
@@ -60,10 +57,7 @@ namespace EducationSystem.Repositories
                         "updated_at"
                     )
                     .OrderBy("name")
-                    .ForPage(
-                        page,
-                        pageSize
-                    )
+                    .ForPage(page, pageSize)
                     .GetAsync<Subject>();
 
             return new PagedResult<Subject>
@@ -75,8 +69,7 @@ namespace EducationSystem.Repositories
             };
         }
 
-        public async Task<Subject?> GetByIdAsync(
-            int id)
+        public async Task<Subject?> GetByIdAsync(int id)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -85,6 +78,7 @@ namespace EducationSystem.Repositories
                 await db
                     .Query(TableName)
                     .Where("id", id)
+                    .Where("is_active", true)
                     .Limit(1)
                     .GetAsync<Subject>();
 
@@ -128,6 +122,7 @@ namespace EducationSystem.Repositories
             IEnumerable<Subject> subjects =
                 await db
                     .Query(TableName)
+                    .Where("is_active", true)
                     .Select(
                         "id",
                         "name",
@@ -139,38 +134,32 @@ namespace EducationSystem.Repositories
             return subjects.ToList();
         }
 
-        public async Task<int> CreateAsync(
-            Subject subject)
+        public async Task<int> CreateAsync(Subject subject)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-            int id =
-                await db
-                    .Query(TableName)
-                    .InsertGetIdAsync<int>(
-                        new
-                        {
-                            name = subject.Name,
-                            duration = subject.Duration
-                        }
-                    );
-
-            return id;
+            return await db
+                .Query(TableName)
+                .InsertGetIdAsync<int>(
+                    new
+                    {
+                        name = subject.Name,
+                        duration = subject.Duration,
+                        is_active = true
+                    }
+                );
         }
 
-        public async Task UpdateAsync(
-            Subject subject)
+        public async Task UpdateAsync(Subject subject)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
             await db
                 .Query(TableName)
-                .Where(
-                    "id",
-                    subject.Id
-                )
+                .Where("id", subject.Id)
+                .Where("is_active", true)
                 .UpdateAsync(
                     new
                     {
@@ -181,8 +170,7 @@ namespace EducationSystem.Repositories
                 );
         }
 
-        public async Task DeleteAsync(
-            int id)
+        public async Task DeleteAsync(int id)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -190,7 +178,14 @@ namespace EducationSystem.Repositories
             await db
                 .Query(TableName)
                 .Where("id", id)
-                .DeleteAsync();
+                .Where("is_active", true)
+                .UpdateAsync(
+                    new
+                    {
+                        is_active = false,
+                        updated_at = DateTime.Now
+                    }
+                );
         }
     }
 }

@@ -9,8 +9,8 @@ namespace EducationSystem.Repositories
 {
     public sealed class GroupRepository : IGroupRepository
     {
-        DatabaseConnectionFactory _connectionFactory;
-        const string tableName = "groups";
+        private readonly DatabaseConnectionFactory _connectionFactory;
+        private const string TableName = "groups";
 
         public GroupRepository(DatabaseConnectionFactory connectionFactory)
         {
@@ -19,29 +19,37 @@ namespace EducationSystem.Repositories
 
         public async Task<int> CreateAsync(Group group)
         {
-            QueryFactory db = _connectionFactory.CreateQueryFactory();
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
-            int id = await
-                db.Query(tableName)
+            return await db
+                .Query(TableName)
                 .InsertGetIdAsync<int>(
                     new
                     {
                         prefix = group.Prefix,
-                        number = group.Number
+                        number = group.Number,
+                        is_active = true
                     }
                 );
-
-            return id;
         }
 
         public async Task DeleteAsync(int id)
         {
-            QueryFactory db = _connectionFactory.CreateQueryFactory();
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
             await db
-                .Query(tableName)
+                .Query(TableName)
                 .Where("id", id)
-                .DeleteAsync();
+                .Where("is_active", true)
+                .UpdateAsync(
+                    new
+                    {
+                        is_active = false,
+                        updated_at = DateTime.Now
+                    }
+                );
         }
 
         public async Task<IReadOnlyList<Group>> GetAllAsync()
@@ -51,7 +59,8 @@ namespace EducationSystem.Repositories
 
             IEnumerable<Group> groups =
                 await db
-                    .Query(tableName)
+                    .Query(TableName)
+                    .Where("is_active", true)
                     .Select(
                         "id",
                         "prefix",
@@ -66,26 +75,31 @@ namespace EducationSystem.Repositories
 
         public async Task<Group?> GetByIdAsync(int id)
         {
-            using QueryFactory db = _connectionFactory.CreateQueryFactory();
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
-            IEnumerable<Group> group = await db
-                .Query(tableName)
-                .Where("id", id)
-                .Limit(1)
-                .GetAsync<Group>();
+            IEnumerable<Group> groups =
+                await db
+                    .Query(TableName)
+                    .Where("id", id)
+                    .Where("is_active", true)
+                    .Limit(1)
+                    .GetAsync<Group>();
 
-            return group.FirstOrDefault();
+            return groups.FirstOrDefault();
         }
 
         public async Task<PagedResult<Group>> GetPagedAsync(
-    string? search,
-    int page,
-    int pageSize)
+            string? search,
+            int page,
+            int pageSize)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-            Query query = db.Query(tableName);
+            Query query =
+                db.Query(TableName)
+                    .Where("is_active", true);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -142,10 +156,7 @@ namespace EducationSystem.Repositories
                     )
                     .OrderBy("prefix")
                     .OrderBy("number")
-                    .ForPage(
-                        page,
-                        pageSize
-                    )
+                    .ForPage(page, pageSize)
                     .GetAsync<Group>();
 
             return new PagedResult<Group>
@@ -159,18 +170,21 @@ namespace EducationSystem.Repositories
 
         public async Task UpdateAsync(Group group)
         {
-            QueryFactory db = _connectionFactory.CreateQueryFactory();
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
             await db
-                .Query(tableName)
+                .Query(TableName)
                 .Where("id", group.Id)
+                .Where("is_active", true)
                 .UpdateAsync(
-                new
-                {
-                    prefix = group.Prefix,
-                    number = group.Number,
-                    updated_at = DateTime.Now
-                });
+                    new
+                    {
+                        prefix = group.Prefix,
+                        number = group.Number,
+                        updated_at = DateTime.Now
+                    }
+                );
         }
     }
 }

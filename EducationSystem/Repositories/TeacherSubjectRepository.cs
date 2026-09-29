@@ -8,22 +8,16 @@ using SqlKata.Execution;
 
 namespace EducationSystem.Repositories
 {
-    public sealed class TeacherSubjectRepository
-        : ITeacherSubjectRepository
+    public sealed class TeacherSubjectRepository : ITeacherSubjectRepository
     {
         private readonly DatabaseConnectionFactory _connectionFactory;
-
-        private const string TableName =
-            "teachers_subjects";
-
+        private const string TableName = "teachers_subjects";
 
         public TeacherSubjectRepository(
             DatabaseConnectionFactory connectionFactory)
         {
-            _connectionFactory =
-                connectionFactory;
+            _connectionFactory = connectionFactory;
         }
-
 
         public async Task<PagedResult<TeacherSubjectListItem>>
             GetPagedAsync(
@@ -36,7 +30,6 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-
             Query query =
                 db.Query(TableName)
                     .Join(
@@ -48,7 +41,10 @@ namespace EducationSystem.Repositories
                         "subjects",
                         "subjects.id",
                         "teachers_subjects.subject_id"
-                    );
+                    )
+                    .Where("teachers_subjects.is_active", true)
+                    .Where("teachers.is_active", true)
+                    .Where("subjects.is_active", true);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -60,12 +56,9 @@ namespace EducationSystem.Repositories
                             StringSplitOptions.RemoveEmptyEntries
                         );
 
-
                 foreach (string part in searchParts)
                 {
-                    string value =
-                        part;
-
+                    string value = part;
 
                     query.Where(q =>
                     {
@@ -94,7 +87,6 @@ namespace EducationSystem.Repositories
                 }
             }
 
-
             if (teacherId.HasValue)
             {
                 query.Where(
@@ -111,17 +103,14 @@ namespace EducationSystem.Repositories
                 );
             }
 
-
             IEnumerable<int> countResult =
                 await query
                     .Clone()
                     .AsCount()
                     .GetAsync<int>();
 
-
             int totalCount =
                 countResult.FirstOrDefault();
-
 
             IEnumerable<TeacherSubjectListItem> items =
                 await query
@@ -141,29 +130,17 @@ namespace EducationSystem.Repositories
                     .OrderBy("teachers.last_name")
                     .OrderBy("teachers.first_name")
                     .OrderBy("subjects.name")
-                    .ForPage(
-                        page,
-                        pageSize
-                    )
+                    .ForPage(page, pageSize)
                     .GetAsync<TeacherSubjectListItem>();
-
 
             return new PagedResult<TeacherSubjectListItem>
             {
-                Items =
-                    items.ToList(),
-
-                TotalCount =
-                    totalCount,
-
-                Page =
-                    page,
-
-                PageSize =
-                    pageSize
+                Items = items.ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
             };
         }
-
 
         public async Task<IReadOnlyList<TeacherSubjectListItem>> GetAllAsync()
         {
@@ -183,6 +160,9 @@ namespace EducationSystem.Repositories
                         "subjects.id",
                         "teachers_subjects.subject_id"
                     )
+                    .Where("teachers_subjects.is_active", true)
+                    .Where("teachers.is_active", true)
+                    .Where("subjects.is_active", true)
                     .Select(
                         "teachers_subjects.id",
                         "teachers_subjects.teacher_id",
@@ -203,35 +183,41 @@ namespace EducationSystem.Repositories
             return items.ToList();
         }
 
-        public async Task<TeacherSubject?> GetByIdAsync(
-            int id)
+        public async Task<TeacherSubject?> GetByIdAsync(int id)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-
             IEnumerable<TeacherSubject> items =
                 await db
                     .Query(TableName)
-                    .Where(
-                        "id",
-                        id
+                    .Join(
+                        "teachers",
+                        "teachers.id",
+                        "teachers_subjects.teacher_id"
                     )
+                    .Join(
+                        "subjects",
+                        "subjects.id",
+                        "teachers_subjects.subject_id"
+                    )
+                    .Where("teachers_subjects.id", id)
+                    .Where("teachers_subjects.is_active", true)
+                    .Where("teachers.is_active", true)
+                    .Where("subjects.is_active", true)
                     .Select(
-                        "id",
-                        "teacher_id",
-                        "subject_id",
-                        "subgroup",
-                        "created_at",
-                        "updated_at"
+                        "teachers_subjects.id",
+                        "teachers_subjects.teacher_id",
+                        "teachers_subjects.subject_id",
+                        "teachers_subjects.subgroup",
+                        "teachers_subjects.created_at",
+                        "teachers_subjects.updated_at"
                     )
                     .Limit(1)
                     .GetAsync<TeacherSubject>();
 
-
             return items.FirstOrDefault();
         }
-
 
         public async Task<bool> ExistsAsync(
             int teacherId,
@@ -241,18 +227,10 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-
             Query query =
                 db.Query(TableName)
-                    .Where(
-                        "teacher_id",
-                        teacherId
-                    )
-                    .Where(
-                        "subject_id",
-                        subjectId
-                    );
-
+                    .Where("teacher_id", teacherId)
+                    .Where("subject_id", subjectId);
 
             if (excludeId.HasValue)
             {
@@ -263,17 +241,14 @@ namespace EducationSystem.Repositories
                 );
             }
 
-
             IEnumerable<int> ids =
                 await query
                     .Select("id")
                     .Limit(1)
                     .GetAsync<int>();
 
-
             return ids.Any();
         }
-
 
         public async Task<int> CreateAsync(
             TeacherSubject teacherSubject)
@@ -281,28 +256,18 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-
-            int id =
-                await db
-                    .Query(TableName)
-                    .InsertGetIdAsync<int>(
-                        new
-                        {
-                            teacher_id =
-                                teacherSubject.TeacherId,
-
-                            subject_id =
-                                teacherSubject.SubjectId,
-
-                            subgroup =
-                                teacherSubject.Subgroup
-                        }
-                    );
-
-
-            return id;
+            return await db
+                .Query(TableName)
+                .InsertGetIdAsync<int>(
+                    new
+                    {
+                        teacher_id = teacherSubject.TeacherId,
+                        subject_id = teacherSubject.SubjectId,
+                        subgroup = teacherSubject.Subgroup,
+                        is_active = true
+                    }
+                );
         }
-
 
         public async Task UpdateAsync(
             TeacherSubject teacherSubject)
@@ -310,46 +275,37 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-
             await db
                 .Query(TableName)
-                .Where(
-                    "id",
-                    teacherSubject.Id
-                )
+                .Where("id", teacherSubject.Id)
+                .Where("is_active", true)
                 .UpdateAsync(
                     new
                     {
-                        teacher_id =
-                            teacherSubject.TeacherId,
-
-                        subject_id =
-                            teacherSubject.SubjectId,
-
-                        subgroup =
-                            teacherSubject.Subgroup,
-
-                        updated_at =
-                            DateTime.Now
+                        teacher_id = teacherSubject.TeacherId,
+                        subject_id = teacherSubject.SubjectId,
+                        subgroup = teacherSubject.Subgroup,
+                        updated_at = DateTime.Now
                     }
                 );
         }
 
-
-        public async Task DeleteAsync(
-            int id)
+        public async Task DeleteAsync(int id)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-
             await db
                 .Query(TableName)
-                .Where(
-                    "id",
-                    id
-                )
-                .DeleteAsync();
+                .Where("id", id)
+                .Where("is_active", true)
+                .UpdateAsync(
+                    new
+                    {
+                        is_active = false,
+                        updated_at = DateTime.Now
+                    }
+                );
         }
     }
 }

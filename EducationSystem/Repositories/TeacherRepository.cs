@@ -11,17 +11,12 @@ namespace EducationSystem.Repositories
     public sealed class TeacherRepository : ITeacherRepository
     {
         private readonly DatabaseConnectionFactory _connectionFactory;
-
         private const string TableName = "teachers";
 
-
-        public TeacherRepository(
-            DatabaseConnectionFactory connectionFactory)
+        public TeacherRepository(DatabaseConnectionFactory connectionFactory)
         {
-            _connectionFactory =
-                connectionFactory;
+            _connectionFactory = connectionFactory;
         }
-
 
         public async Task<PagedResult<Teacher>> GetPagedAsync(
             string? search,
@@ -33,10 +28,9 @@ namespace EducationSystem.Repositories
                 _connectionFactory.CreateQueryFactory();
 
             Query query =
-                db.Query(TableName);
+                db.Query(TableName)
+                    .Where("is_active", true);
 
-
-         
             if (!string.IsNullOrWhiteSpace(search))
             {
                 string[] searchParts =
@@ -81,7 +75,6 @@ namespace EducationSystem.Repositories
                 );
             }
 
-
             IEnumerable<int> countResult =
                 await query
                     .Clone()
@@ -105,26 +98,15 @@ namespace EducationSystem.Repositories
                     )
                     .OrderBy("last_name")
                     .OrderBy("first_name")
-                    .ForPage(
-                        page,
-                        pageSize
-                    )
+                    .ForPage(page, pageSize)
                     .GetAsync<Teacher>();
-
 
             return new PagedResult<Teacher>
             {
-                Items =
-                    teachers.ToList(),
-
-                TotalCount =
-                    totalCount,
-
-                Page =
-                    page,
-
-                PageSize =
-                    pageSize
+                Items = teachers.ToList(),
+                TotalCount = totalCount,
+                Page = page,
+                PageSize = pageSize
             };
         }
 
@@ -136,6 +118,7 @@ namespace EducationSystem.Repositories
             IEnumerable<Teacher> teachers =
                 await db
                     .Query(TableName)
+                    .Where("is_active", true)
                     .Select(
                         "id",
                         "first_name",
@@ -149,8 +132,8 @@ namespace EducationSystem.Repositories
 
             return teachers.ToList();
         }
-        public async Task<Teacher?> GetByIdAsync(
-            int id)
+
+        public async Task<Teacher?> GetByIdAsync(int id)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
@@ -158,16 +141,13 @@ namespace EducationSystem.Repositories
             IEnumerable<Teacher> teachers =
                 await db
                     .Query(TableName)
-                    .Where(
-                        "id",
-                        id
-                    )
+                    .Where("id", id)
+                    .Where("is_active", true)
                     .Limit(1)
                     .GetAsync<Teacher>();
 
             return teachers.FirstOrDefault();
         }
-
 
         public async Task<bool> ExistsByEmailAsync(
             string email,
@@ -178,10 +158,7 @@ namespace EducationSystem.Repositories
 
             Query query =
                 db.Query(TableName)
-                    .Where(
-                        "email",
-                        email
-                    );
+                    .Where("email", email);
 
             if (excludeId.HasValue)
             {
@@ -201,84 +178,62 @@ namespace EducationSystem.Repositories
             return ids.Any();
         }
 
-
-        public async Task<int> CreateAsync(
-            Teacher teacher)
+        public async Task<int> CreateAsync(Teacher teacher)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-            int id =
-                await db
-                    .Query(TableName)
-                    .InsertGetIdAsync<int>(
-                        new
-                        {
-                            first_name =
-                                teacher.FirstName,
-
-                            last_name =
-                                teacher.LastName,
-
-                            email =
-                                teacher.Email,
-
-                            category =
-                                teacher.Category.ToString()
-                        }
-                    );
-
-            return id;
-        }
-
-
-        public async Task UpdateAsync(
-            Teacher teacher)
-        {
-            using QueryFactory db =
-                _connectionFactory.CreateQueryFactory();
-
-            await db
+            return await db
                 .Query(TableName)
-                .Where(
-                    "id",
-                    teacher.Id
-                )
-                .UpdateAsync(
+                .InsertGetIdAsync<int>(
                     new
                     {
-                        first_name =
-                            teacher.FirstName,
-
-                        last_name =
-                            teacher.LastName,
-
-                        email =
-                            teacher.Email,
-
-                        category =
-                            teacher.Category.ToString(),
-
-                        updated_at =
-                            DateTime.Now
+                        first_name = teacher.FirstName,
+                        last_name = teacher.LastName,
+                        email = teacher.Email,
+                        category = teacher.Category.ToString(),
+                        is_active = true
                     }
                 );
         }
 
-
-        public async Task DeleteAsync(
-            int id)
+        public async Task UpdateAsync(Teacher teacher)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
             await db
                 .Query(TableName)
-                .Where(
-                    "id",
-                    id
-                )
-                .DeleteAsync();
+                .Where("id", teacher.Id)
+                .Where("is_active", true)
+                .UpdateAsync(
+                    new
+                    {
+                        first_name = teacher.FirstName,
+                        last_name = teacher.LastName,
+                        email = teacher.Email,
+                        category = teacher.Category.ToString(),
+                        updated_at = DateTime.Now
+                    }
+                );
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
+
+            await db
+                .Query(TableName)
+                .Where("id", id)
+                .Where("is_active", true)
+                .UpdateAsync(
+                    new
+                    {
+                        is_active = false,
+                        updated_at = DateTime.Now
+                    }
+                );
         }
     }
 }

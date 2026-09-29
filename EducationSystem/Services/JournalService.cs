@@ -124,18 +124,10 @@ namespace EducationSystem.Services
                 );
 
 
-            AttendanceStatus? attendanceStatus =
-                item.IsMissing switch
-                {
-                    true =>
-                        AttendanceStatus.Missing,
-
-                    false =>
-                        AttendanceStatus.Present,
-
-                    null =>
-                        null
-                };
+            AttendanceStatus attendanceStatus =
+             item.IsMissing
+                 ? AttendanceStatus.Missing
+                 : AttendanceStatus.Present;
 
 
             await _journalRepository

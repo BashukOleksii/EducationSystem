@@ -1,32 +1,57 @@
 ﻿using Dapper;
 using EducationSystem.Configuration;
 using EducationSystem.Data;
-using System.Configuration;
-using System.Data;
 using System.Windows;
 
 namespace EducationSystem
 {
-    /// <summary>
-    /// Interaction logic for App.xaml
-    /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        protected override async void OnStartup(
+            StartupEventArgs e)
         {
             base.OnStartup(e);
 
             DefaultTypeMap.MatchNamesWithUnderscores = true;
 
+
             try
             {
-                AppSettings settings = AppSettings.Load();
+                AppSettings settings =
+                    AppSettings.Load();
 
-                DatabaseConnectionFactory databaseFactory = new DatabaseConnectionFactory(settings.ConnectionStrings.DefaultConnection);
 
-                MainWindow mainWindow = new MainWindow(databaseFactory);
+                DatabaseConnectionFactory databaseFactory =
+                    new DatabaseConnectionFactory(
+                        settings.ConnectionStrings.DefaultConnection
+                    );
 
-                MainWindow = mainWindow;
+
+                /*
+                 * Seeder запускається ДО відкриття MainWindow.
+                 *
+                 * Якщо база порожня -> додає тестові дані.
+                 * Якщо є хоча б один запис -> нічого не робить.
+                 */
+                DatabaseSeeder seeder =
+                    new DatabaseSeeder(
+                        databaseFactory
+                    );
+
+
+                await seeder
+                    .SeedIfEmptyAsync();
+
+
+                MainWindow mainWindow =
+                    new MainWindow(
+                        databaseFactory
+                    );
+
+
+                MainWindow =
+                    mainWindow;
+
 
                 mainWindow.Show();
             }
@@ -39,10 +64,9 @@ namespace EducationSystem
                     MessageBoxImage.Error
                 );
 
+
                 Shutdown();
             }
-
         }
     }
-
 }

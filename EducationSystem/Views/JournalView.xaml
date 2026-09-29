@@ -182,12 +182,11 @@
                 <!-- НБ -->
 
                 <DataGridCheckBoxColumn
-                    Header="НБ"
-                    Width="1*"
-                    IsThreeState="True"
-                    Binding="{Binding IsMissing,
-                                      Mode=TwoWay,
-                                      UpdateSourceTrigger=PropertyChanged}"/>
+    Header="НБ"
+    Width="1*"
+    Binding="{Binding IsMissing,
+                      Mode=TwoWay,
+                      UpdateSourceTrigger=PropertyChanged}"/>
 
 
                 <!-- Збереження одного рядка -->

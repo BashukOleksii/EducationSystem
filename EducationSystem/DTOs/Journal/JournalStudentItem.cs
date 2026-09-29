@@ -17,7 +17,7 @@
 
         public string? AttendanceStatusValue { get; set; }
 
-        public bool? IsMissing { get; set; }
+        public bool IsMissing { get; set; }
 
 
         public string FullName =>

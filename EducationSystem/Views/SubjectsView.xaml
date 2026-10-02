@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:EducationSystem.Controls"
              mc:Ignorable="d"
              d:DesignWidth="975">
 
@@ -74,35 +75,47 @@
 
             <!-- Таблиця предметів -->
 
-            <DataGrid
-                Grid.Column="0"
-                ItemsSource="{Binding Subjects}"
-                SelectedItem="{Binding SelectedSubject}"
-                AutoGenerateColumns="False"
-                IsReadOnly="True"
-                SelectionMode="Single"
-                SelectionUnit="FullRow">
+            <!-- Таблиця предметів + локальний пошук -->
 
-                <DataGrid.Columns>
+            <DockPanel Grid.Column="0">
 
-                    <DataGridTextColumn
-                        Header="ID"
-                        Binding="{Binding Id}"
-                        Width="70"/>
+                <controls:TableSearchControl
+        DockPanel.Dock="Top"
+        Margin="0,0,0,10"
+        TargetDataGrid="{Binding ElementName=SubjectsDataGrid}"/>
 
-                    <DataGridTextColumn
-                        Header="Назва"
-                        Binding="{Binding Name}"
-                        Width="*"/>
+                <DataGrid
+        x:Name="SubjectsDataGrid"
+        ItemsSource="{Binding Subjects}"
+        SelectedItem="{Binding SelectedSubject,
+                               Mode=TwoWay}"
+        AutoGenerateColumns="False"
+        IsReadOnly="True"
+        SelectionMode="Single"
+        SelectionUnit="FullRow">
 
-                    <DataGridTextColumn
-                        Header="Тривалість"
-                        Binding="{Binding Duration}"
-                        Width="150"/>
+                    <DataGrid.Columns>
 
-                </DataGrid.Columns>
+                        <DataGridTextColumn
+                Header="ID"
+                Binding="{Binding Id}"
+                Width="70"/>
 
-            </DataGrid>
+                        <DataGridTextColumn
+                Header="Назва"
+                Binding="{Binding Name}"
+                Width="*"/>
+
+                        <DataGridTextColumn
+                Header="Тривалість"
+                Binding="{Binding Duration}"
+                Width="150"/>
+
+                    </DataGrid.Columns>
+
+                </DataGrid>
+
+            </DockPanel>
 
 
             <!-- Форма -->

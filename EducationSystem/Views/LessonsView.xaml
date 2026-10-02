@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="clr-namespace:EducationSystem.Controls"
              mc:Ignorable="d">
 
     <Grid Margin="24">
@@ -170,56 +171,63 @@
             </Grid.ColumnDefinitions>
 
 
-            <DataGrid
-                Grid.Column="0"
-                ItemsSource="{Binding Lessons}"
-                SelectedItem="{Binding SelectedLesson}"
-                AutoGenerateColumns="False"
-                IsReadOnly="True"
-                SelectionMode="Single"
-                SelectionUnit="FullRow">
+            <!-- Таблиця занять + локальний пошук -->
 
-                <DataGrid.Columns>
+            <DockPanel Grid.Column="0">
 
-                    <DataGridTextColumn
-                        Header="Дата"
-                        Binding="{Binding Date,
-                                          StringFormat=dd.MM.yyyy}"
-                        Width="100"/>
+                <controls:TableSearchControl
+        DockPanel.Dock="Top"
+        Margin="0,0,0,10"
+        TargetDataGrid="{Binding ElementName=LessonsDataGrid}"/>
 
+                <DataGrid
+        x:Name="LessonsDataGrid"
+        ItemsSource="{Binding Lessons}"
+        SelectedItem="{Binding SelectedLesson,
+                               Mode=TwoWay}"
+        AutoGenerateColumns="False"
+        IsReadOnly="True"
+        SelectionMode="Single"
+        SelectionUnit="FullRow">
 
-                    <DataGridTextColumn
-                        Header="Викладач"
-                        Binding="{Binding TeacherFullName}"
-                        Width="*"/>
+                    <DataGrid.Columns>
 
+                        <DataGridTextColumn
+                Header="Дата"
+                Binding="{Binding Date,
+                                  StringFormat=dd.MM.yyyy}"
+                Width="100"/>
 
-                    <DataGridTextColumn
-                        Header="Предмет"
-                        Binding="{Binding SubjectName}"
-                        Width="*"/>
+                        <DataGridTextColumn
+                Header="Викладач"
+                Binding="{Binding TeacherFullName}"
+                Width="*"/>
 
+                        <DataGridTextColumn
+                Header="Предмет"
+                Binding="{Binding SubjectName}"
+                Width="*"/>
 
-                    <DataGridTextColumn
-                        Header="Група"
-                        Binding="{Binding GroupName}"
-                        Width="90"/>
+                        <DataGridTextColumn
+                Header="Група"
+                Binding="{Binding GroupName}"
+                Width="90"/>
 
+                        <DataGridTextColumn
+                Header="Підгр."
+                Binding="{Binding SubgroupText}"
+                Width="65"/>
 
-                    <DataGridTextColumn
-                        Header="Підгр."
-                        Binding="{Binding SubgroupText}"
-                        Width="65"/>
+                        <DataGridTextColumn
+                Header="Тема"
+                Binding="{Binding Title}"
+                Width="1.5*"/>
 
+                    </DataGrid.Columns>
 
-                    <DataGridTextColumn
-                        Header="Тема"
-                        Binding="{Binding Title}"
-                        Width="1.5*"/>
+                </DataGrid>
 
-                </DataGrid.Columns>
-
-            </DataGrid>
+            </DockPanel>
 
 
             <!-- Форма -->

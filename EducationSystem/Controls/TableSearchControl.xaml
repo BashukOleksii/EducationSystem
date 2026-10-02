@@ -1,0 +1,52 @@
+﻿<UserControl x:Class="EducationSystem.Controls.TableSearchControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Локальний пошук по рядках таблиці -->
+        <TextBox
+            x:Name="SearchTextBox"
+            Grid.Column="0"
+            Height="34"
+            Margin="0,0,8,0"
+            VerticalContentAlignment="Center"
+            ToolTip="Пошук у поточній таблиці"
+            TextChanged="SearchTextBox_TextChanged"/>
+
+        <!-- Попередній збіг -->
+        <Button
+            Grid.Column="1"
+            Content="← Попередній"
+            MinWidth="110"
+            Height="34"
+            Margin="0,0,8,0"
+            Click="PreviousButton_Click"/>
+
+        <!-- Наступний збіг -->
+        <Button
+            Grid.Column="2"
+            Content="Далі →"
+            MinWidth="90"
+            Height="34"
+            Margin="0,0,10,0"
+            Click="NextButton_Click"/>
+
+        <!-- Поточний збіг / загальна кількість -->
+        <TextBlock
+            x:Name="MatchInfoTextBlock"
+            Grid.Column="3"
+            MinWidth="55"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Text=""/>
+
+    </Grid>
+
+</UserControl>

@@ -24,6 +24,12 @@ namespace EducationSystem.Services
                 groupRepository;
         }
 
+        public Task<IReadOnlyList<StudentListItem>>
+            GetAllAsync()
+        {
+            return _studentRepository
+                .GetAllAsync();
+        }
 
         public Task<PagedResult<StudentListItem>> GetPagedAsync(
             string? search,

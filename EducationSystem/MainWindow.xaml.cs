@@ -379,5 +379,91 @@ namespace EducationSystem
                     viewModel
                 );
         }
+
+        private void AnalyticsButton_Click(
+    object sender,
+    RoutedEventArgs e)
+        {
+            ShowAnalytics();
+        }
+
+        private void ShowAnalytics()
+        {
+
+            AnalyticsRepository analyticsRepository =
+                new AnalyticsRepository(
+                    _databaseFactory
+                );
+
+
+            TeacherRepository teacherRepository =
+                new TeacherRepository(
+                    _databaseFactory
+                );
+
+
+            SubjectRepository subjectRepository =
+                new SubjectRepository(
+                    _databaseFactory
+                );
+
+
+            StudentRepository studentRepository =
+                new StudentRepository(
+                    _databaseFactory
+                );
+
+
+            GroupRepository groupRepository =
+                new GroupRepository(
+                    _databaseFactory
+                );
+
+            AnalyticsService analyticsService =
+                new AnalyticsService(
+                    analyticsRepository
+                );
+
+
+            TeacherService teacherService =
+                new TeacherService(
+                    teacherRepository
+                );
+
+
+            SubjectService subjectService =
+                new SubjectService(
+                    subjectRepository
+                );
+
+
+            GroupService groupService =
+                new GroupService(
+                    groupRepository
+                );
+
+
+            StudentService studentService =
+                new StudentService(
+                    studentRepository,
+                    groupRepository
+                );
+
+
+            AnalyticsViewModel viewModel =
+                new AnalyticsViewModel(
+                    analyticsService,
+                    teacherService,
+                    subjectService,
+                    studentService,
+                    groupService
+                );
+
+
+            MainContent.Content =
+                new AnalyticsView(
+                    viewModel
+                );
+        }
     }
 }

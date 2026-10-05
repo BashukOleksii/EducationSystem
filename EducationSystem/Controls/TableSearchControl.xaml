@@ -3,14 +3,18 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
     <Grid>
+
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
             <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
 
-        <!-- Локальний пошук по рядках таблиці -->
+
+        <!-- Текст локального пошуку -->
+
         <TextBox
             x:Name="SearchTextBox"
             Grid.Column="0"
@@ -20,28 +24,49 @@
             ToolTip="Пошук у поточній таблиці"
             TextChanged="SearchTextBox_TextChanged"/>
 
-        <!-- Попередній збіг -->
+
+        <!-- Запуск пошуку -->
+
         <Button
             Grid.Column="1"
+            Content="Знайти"
+            Width="90"
+            Height="34"
+            Margin="0,0,8,0"
+            Click="SearchButton_Click"/>
+
+
+        <!-- Попередній збіг -->
+
+        <Button
+            x:Name="PreviousButton"
+            Grid.Column="2"
             Content="← Попередній"
             MinWidth="110"
             Height="34"
             Margin="0,0,8,0"
+            IsEnabled="False"
             Click="PreviousButton_Click"/>
 
+
         <!-- Наступний збіг -->
+
         <Button
-            Grid.Column="2"
+            x:Name="NextButton"
+            Grid.Column="3"
             Content="Далі →"
             MinWidth="90"
             Height="34"
             Margin="0,0,10,0"
+            IsEnabled="False"
             Click="NextButton_Click"/>
 
+
         <!-- Поточний збіг / загальна кількість -->
+
         <TextBlock
             x:Name="MatchInfoTextBlock"
-            Grid.Column="3"
+            Grid.Column="4"
             MinWidth="55"
             VerticalAlignment="Center"
             HorizontalAlignment="Center"

@@ -8,6 +8,10 @@ namespace EducationSystem.Controls
 {
     public partial class TableSearchControl : UserControl
     {
+        private string _activeSearchText =
+            string.Empty;
+
+
         public TableSearchControl()
         {
             InitializeComponent();
@@ -42,9 +46,27 @@ namespace EducationSystem.Controls
             object sender,
             TextChangedEventArgs e)
         {
-            SelectFirstMatch();
-        }
+            _activeSearchText =
+                string.Empty;
 
+
+            MatchInfoTextBlock.Text =
+                string.Empty;
+
+
+            PreviousButton.IsEnabled =
+                false;
+
+
+            NextButton.IsEnabled =
+                false;
+        }
+        private void SearchButton_Click(
+            object sender,
+            RoutedEventArgs e)
+        {
+            StartSearch();
+        }
 
         private void PreviousButton_Click(
             object sender,
@@ -61,24 +83,47 @@ namespace EducationSystem.Controls
             MoveToMatch(1);
         }
 
-
-        private void SelectFirstMatch()
+        private void StartSearch()
         {
-            string searchText =
-                SearchTextBox.Text.Trim();
-
-
-            if (string.IsNullOrWhiteSpace(searchText))
+            if (TargetDataGrid is null)
             {
-                MatchInfoTextBlock.Text =
-                    string.Empty;
-
                 return;
             }
 
 
+            string searchText =
+                SearchTextBox.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(
+                searchText))
+            {
+                _activeSearchText =
+                    string.Empty;
+
+
+                MatchInfoTextBlock.Text =
+                    string.Empty;
+
+
+                PreviousButton.IsEnabled =
+                    false;
+
+
+                NextButton.IsEnabled =
+                    false;
+
+
+                return;
+            }
+
+            _activeSearchText =
+                searchText;
+
+
             List<object> matches =
-                GetMatches(searchText);
+                GetMatches(
+                    _activeSearchText
+                );
 
 
             if (matches.Count == 0)
@@ -86,8 +131,25 @@ namespace EducationSystem.Controls
                 MatchInfoTextBlock.Text =
                     "0 / 0";
 
+
+                PreviousButton.IsEnabled =
+                    false;
+
+
+                NextButton.IsEnabled =
+                    false;
+
+
                 return;
             }
+
+
+            PreviousButton.IsEnabled =
+                true;
+
+
+            NextButton.IsEnabled =
+                true;
 
 
             SelectItem(
@@ -106,27 +168,32 @@ namespace EducationSystem.Controls
             }
 
 
-            string searchText =
-                SearchTextBox.Text.Trim();
-
-
-            if (string.IsNullOrWhiteSpace(searchText))
+            if (string.IsNullOrWhiteSpace(
+                _activeSearchText))
             {
-                MatchInfoTextBlock.Text =
-                    string.Empty;
-
                 return;
             }
 
 
             List<object> matches =
-                GetMatches(searchText);
+                GetMatches(
+                    _activeSearchText
+                );
 
 
             if (matches.Count == 0)
             {
                 MatchInfoTextBlock.Text =
                     "0 / 0";
+
+
+                PreviousButton.IsEnabled =
+                    false;
+
+
+                NextButton.IsEnabled =
+                    false;
+
 
                 return;
             }
@@ -137,12 +204,15 @@ namespace EducationSystem.Controls
 
 
             int currentIndex =
-                matches.IndexOf(
-                    selectedItem!
-                );
+                selectedItem is null
+                    ? -1
+                    : matches.IndexOf(
+                        selectedItem
+                    );
 
 
             int nextIndex;
+
 
             if (currentIndex < 0)
             {
@@ -161,8 +231,6 @@ namespace EducationSystem.Controls
                 {
                     nextIndex = 0;
                 }
-
-
                 if (nextIndex < 0)
                 {
                     nextIndex =
@@ -176,7 +244,6 @@ namespace EducationSystem.Controls
                 nextIndex
             );
         }
-
 
         private void SelectItem(
             List<object> matches,
@@ -195,7 +262,6 @@ namespace EducationSystem.Controls
             TargetDataGrid.SelectedItem =
                 item;
 
-
             TargetDataGrid.ScrollIntoView(
                 item
             );
@@ -203,11 +269,9 @@ namespace EducationSystem.Controls
 
             TargetDataGrid.Focus();
 
-
             MatchInfoTextBlock.Text =
                 $"{index + 1} / {matches.Count}";
         }
-
 
         private List<object> GetMatches(
             string searchText)
@@ -236,13 +300,16 @@ namespace EducationSystem.Controls
                     item,
                     searchText))
                 {
-                    result.Add(item);
+                    result.Add(
+                        item
+                    );
                 }
             }
 
 
             return result;
         }
+
 
 
         private bool ItemMatches(
@@ -254,10 +321,12 @@ namespace EducationSystem.Controls
                 return false;
             }
 
+
             foreach (DataGridColumn column
                      in TargetDataGrid.Columns)
             {
-                if (column is not DataGridBoundColumn
+                if (column
+                    is not DataGridBoundColumn
                     boundColumn)
                 {
                     continue;
@@ -304,7 +373,8 @@ namespace EducationSystem.Controls
 
                 if (valueText.Contains(
                     searchText,
-                    StringComparison.CurrentCultureIgnoreCase))
+                    StringComparison
+                        .CurrentCultureIgnoreCase))
                 {
                     return true;
                 }
@@ -313,7 +383,6 @@ namespace EducationSystem.Controls
 
             return false;
         }
-
 
         private static object? GetPropertyValue(
             object source,
@@ -365,21 +434,25 @@ namespace EducationSystem.Controls
             object value,
             string? format)
         {
-            if (string.IsNullOrWhiteSpace(format))
+            if (string.IsNullOrWhiteSpace(
+                format))
             {
                 return value.ToString()
                        ?? string.Empty;
             }
 
 
-            if (value is IFormattable formattable)
+            if (value
+                is IFormattable formattable)
             {
                 try
                 {
-                    return formattable.ToString(
-                               format,
-                               CultureInfo.CurrentCulture
-                           )
+                    return formattable
+                               .ToString(
+                                   format,
+                                   CultureInfo
+                                       .CurrentCulture
+                               )
                            ?? string.Empty;
                 }
                 catch (FormatException)

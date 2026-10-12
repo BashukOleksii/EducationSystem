@@ -48,6 +48,22 @@ public partial class AnalyticsView : UserControl
             Header = "Успішність",
             Content = new PerformanceView(performanceViewModel)
         });
+
+        AttendanceAnalyticsService attendanceService = new(
+            new AttendanceAnalyticsRepository(factory));
+        SubjectService subjectService = new(new SubjectRepository(factory));
+        AttendanceReportExportService attendanceExporter = new();
+        AttendanceViewModel attendanceViewModel = new(
+            attendanceService,
+            groupService,
+            subjectService,
+            attendanceExporter);
+
+        mainTabs.Items.Add(new TabItem
+        {
+            Header = "Відвідуваність",
+            Content = new AttendanceView(attendanceViewModel)
+        });
     }
 
     private async void AnalyticsView_Loaded(object sender, RoutedEventArgs e)

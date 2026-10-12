@@ -1,4 +1,7 @@
-﻿using EducationSystem.ViewModels;
+﻿using EducationSystem.Data;
+using EducationSystem.Repositories;
+using EducationSystem.Services;
+using EducationSystem.ViewModels;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,37 +15,38 @@ public partial class AnalyticsView : UserControl
     public AnalyticsView(AnalyticsViewModel viewModel)
     {
         InitializeComponent();
-
         _viewModel = viewModel;
         DataContext = _viewModel;
-
-        AddGroupEnrollmentTab();
-
+        AddExtraTabs();
         Loaded += AnalyticsView_Loaded;
     }
 
-    private void AddGroupEnrollmentTab()
+    private void AddExtraTabs()
     {
         if (Content is not Grid root)
-        {
-            throw new InvalidOperationException(
-                "Не знайдено кореневий Grid на сторінці аналітики.");
-        }
+            throw new InvalidOperationException("Не знайдено кореневий Grid сторінки аналітики.");
 
-        TabControl? mainTabs = root.Children
-            .OfType<TabControl>()
-            .FirstOrDefault();
-
+        TabControl? mainTabs = root.Children.OfType<TabControl>().FirstOrDefault();
         if (mainTabs is null)
-        {
-            throw new InvalidOperationException(
-                "Не знайдено основний TabControl у AnalyticsView.xaml.");
-        }
+            throw new InvalidOperationException("Не знайдено TabControl сторінки аналітики.");
 
         mainTabs.Items.Add(new TabItem
         {
             Header = "Контингент студентів",
             Content = new GroupEnrollmentView(_viewModel)
+        });
+
+        DatabaseConnectionFactory factory = ((App)Application.Current).DatabaseFactory;
+        GroupService groupService = new(new GroupRepository(factory));
+        PerformanceService performanceService = new(new PerformanceRepository(factory));
+        PerformanceReportExportService exporter = new();
+        PerformanceViewModel performanceViewModel = new(
+            performanceService, groupService, exporter);
+
+        mainTabs.Items.Add(new TabItem
+        {
+            Header = "Успішність",
+            Content = new PerformanceView(performanceViewModel)
         });
     }
 

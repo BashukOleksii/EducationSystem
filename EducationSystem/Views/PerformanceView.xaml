@@ -1,0 +1,146 @@
+<UserControl x:Class="EducationSystem.Views.PerformanceView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:scott="clr-namespace:ScottPlot.WPF;assembly=ScottPlot.WPF"
+             MinWidth="650">
+    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="16">
+            <TextBlock Text="Успішність студентів і груп"
+                       FontSize="24"
+                       FontWeight="SemiBold"/>
+            <TextBlock Text="Середні бали, розподіл оцінок та деталізація за студентами"
+                       Margin="0,4,0,16"
+                       Foreground="#667085"/>
+
+            <WrapPanel Margin="0,0,0,12">
+                <StackPanel Margin="0,0,12,8" Width="180">
+                    <TextBlock Text="Група" Margin="0,0,0,5"/>
+                    <ComboBox Height="34"
+                              ItemsSource="{Binding Groups}"
+                              SelectedItem="{Binding SelectedGroup}"
+                              DisplayMemberPath="Name"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,12,8" Width="150">
+                    <TextBlock Text="Від дати" Margin="0,0,0,5"/>
+                    <DatePicker Height="34" SelectedDate="{Binding FromDate}"/>
+                </StackPanel>
+                <StackPanel Margin="0,0,12,8" Width="150">
+                    <TextBlock Text="До дати" Margin="0,0,0,5"/>
+                    <DatePicker Height="34" SelectedDate="{Binding ToDate}"/>
+                </StackPanel>
+                <Button Content="Показати" Width="95" Height="34"
+                        Margin="0,20,8,8" Command="{Binding LoadCommand}"/>
+                <Button Content="Очистити" Width="95" Height="34"
+                        Margin="0,20,8,8" Command="{Binding ClearFiltersCommand}"/>
+                <Button Content="Excel" Width="90" Height="34"
+                        Margin="0,20,8,8" Click="ExportExcel_Click"/>
+                <Button Content="PDF" Width="90" Height="34"
+                        Margin="0,20,0,8" Click="ExportPdf_Click"/>
+            </WrapPanel>
+
+            <Border Background="#EDF4FA" Padding="12" CornerRadius="7"
+                    Margin="0,0,0,14">
+                <StackPanel>
+                    <TextBlock Text="Обрані параметри" FontWeight="SemiBold"/>
+                    <TextBlock Text="{Binding Report.GroupLabel, StringFormat='Група: {0}'}"
+                               Margin="0,4,0,0"/>
+                    <TextBlock Text="{Binding Report.PeriodLabel, StringFormat='Період: {0}'}"/>
+                </StackPanel>
+            </Border>
+
+            <UniformGrid Columns="4" Margin="0,0,0,16">
+                <Border Background="#EDF4FA" Margin="0,0,8,0" Padding="14" CornerRadius="6">
+                    <StackPanel>
+                        <TextBlock Text="Студентів" Foreground="#475467"/>
+                        <TextBlock Text="{Binding Report.TotalStudents}" FontSize="25" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#EDF4FA" Margin="0,0,8,0" Padding="14" CornerRadius="6">
+                    <StackPanel>
+                        <TextBlock Text="Мають оцінки" Foreground="#475467"/>
+                        <TextBlock Text="{Binding Report.GradedStudents}" FontSize="25" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#EDF4FA" Margin="0,0,8,0" Padding="14" CornerRadius="6">
+                    <StackPanel>
+                        <TextBlock Text="Виставлено оцінок" Foreground="#475467"/>
+                        <TextBlock Text="{Binding Report.TotalGrades}" FontSize="25" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Border Background="#EDF4FA" Padding="14" CornerRadius="6">
+                    <StackPanel>
+                        <TextBlock Text="Загальний середній бал" Foreground="#475467"/>
+                        <TextBlock Text="{Binding Report.AverageGrade, StringFormat={}{0:N2}, TargetNullValue=—}"
+                                   FontSize="25" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <Grid Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" BorderBrush="#D0D5DD" BorderThickness="1"
+                        CornerRadius="7" Padding="8" Margin="0,0,8,0">
+                    <scott:WpfPlot x:Name="AveragePlot" Height="310"/>
+                </Border>
+                <Border Grid.Column="1" BorderBrush="#D0D5DD" BorderThickness="1"
+                        CornerRadius="7" Padding="8" Margin="8,0,0,0">
+                    <scott:WpfPlot x:Name="DistributionPlot" Height="310"/>
+                </Border>
+            </Grid>
+
+            <TextBlock Text="Успішність груп" FontSize="18" FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+            <DataGrid ItemsSource="{Binding Report.Groups}" Height="230"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserAddRows="False" Margin="0,0,0,18">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Група" Binding="{Binding GroupName}" Width="*"/>
+                    <DataGridTextColumn Header="Студентів" Binding="{Binding StudentCount}" Width="*"/>
+                    <DataGridTextColumn Header="З оцінками" Binding="{Binding GradedStudents}" Width="*"/>
+                    <DataGridTextColumn Header="Без оцінок" Binding="{Binding WithoutGrades}" Width="*"/>
+                    <DataGridTextColumn Header="Оцінок" Binding="{Binding GradeCount}" Width="*"/>
+                    <DataGridTextColumn Header="Сер. бал"
+                                        Binding="{Binding AverageGrade, StringFormat={}{0:N2}, TargetNullValue=—}" Width="*"/>
+                    <DataGridTextColumn Header="Низьких (1–3)" Binding="{Binding LowGradeCount}" Width="*"/>
+                    <DataGridTextColumn Header="Високих (10–12)" Binding="{Binding HighGradeCount}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock Text="Успішність студентів" FontSize="18" FontWeight="SemiBold"
+                       Margin="0,0,0,8"/>
+            <DataGrid ItemsSource="{Binding Report.Students}" Height="270"
+                      AutoGenerateColumns="False" IsReadOnly="True"
+                      CanUserAddRows="False" Margin="0,0,0,12">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Група" Binding="{Binding GroupName}" Width="*"/>
+                    <DataGridTextColumn Header="Студент" Binding="{Binding FullName}" Width="2*"/>
+                    <DataGridTextColumn Header="Оцінок" Binding="{Binding GradeCount}" Width="*"/>
+                    <DataGridTextColumn Header="Сер. бал"
+                                        Binding="{Binding AverageGrade, StringFormat={}{0:N2}, TargetNullValue=—}" Width="*"/>
+                    <DataGridTextColumn Header="Низьких (1–3)" Binding="{Binding LowGradeCount}" Width="*"/>
+                    <DataGridTextColumn Header="Високих (10–12)" Binding="{Binding HighGradeCount}" Width="*"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <TextBlock Text="Методика: середній бал рахується за оцінками 1–12. Відсутність оцінки — не нуль. Період визначається датою заняття. Історію переведень між групами не враховано."
+                       Foreground="#667085" TextWrapping="Wrap" Margin="0,0,0,8"/>
+            <TextBlock Text="{Binding Message}" Foreground="Firebrick" TextWrapping="Wrap"/>
+            <TextBlock Text="Завантаження..." Foreground="#667085">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Visibility" Value="Collapsed"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsLoading}" Value="True">
+                                <Setter Property="Visibility" Value="Visible"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

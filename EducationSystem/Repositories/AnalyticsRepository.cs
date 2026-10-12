@@ -511,5 +511,22 @@ namespace EducationSystem.Repositories
 
             return items.ToList();
         }
+
+        public async Task<IReadOnlyList<GroupEnrollmentRow>> GetGroupEnrollmentAsync()
+        {
+            using QueryFactory db = _connectionFactory.CreateQueryFactory();
+
+            var rows = await db.Query("groups")
+                .LeftJoin("students", "students.group_id", "groups.id")
+                .Where("groups.is_active", true)
+                .Select("groups.id", "groups.prefix", "groups.number")
+                .SelectRaw("COUNT(students.id) AS student_count")
+                .GroupBy("groups.id", "groups.prefix", "groups.number")
+                .OrderBy("groups.prefix")
+                .OrderBy("groups.number")
+                .GetAsync<GroupEnrollmentRow>();
+
+            return rows.ToList();
+        }
     }
 }

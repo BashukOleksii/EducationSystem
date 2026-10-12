@@ -450,13 +450,16 @@ namespace EducationSystem
                 );
 
 
+            GroupReportExportService groupReportExportService = new GroupReportExportService();
+
             AnalyticsViewModel viewModel =
                 new AnalyticsViewModel(
                     analyticsService,
                     teacherService,
                     subjectService,
                     studentService,
-                    groupService
+                    groupService,
+                    groupReportExportService
                 );
 
 

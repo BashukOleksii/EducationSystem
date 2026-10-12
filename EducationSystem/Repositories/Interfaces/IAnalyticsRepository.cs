@@ -86,5 +86,7 @@ namespace EducationSystem.Repositories.Interfaces
         // але ще не провели жодного заняття
         Task<IReadOnlyList<TeacherWorkloadItem>>
             GetTeachersWithoutLessonsAsync();
+
+        Task<IReadOnlyList<GroupEnrollmentRow>> GetGroupEnrollmentAsync();
     }
 }

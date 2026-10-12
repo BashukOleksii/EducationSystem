@@ -5,6 +5,7 @@ using EducationSystem.DTOs.Students;
 using EducationSystem.Models;
 using EducationSystem.Services;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace EducationSystem.ViewModels
 {
@@ -12,6 +13,8 @@ namespace EducationSystem.ViewModels
         : ObservableObject
     {
         private readonly AnalyticsService _analyticsService;
+
+        private readonly GroupReportExportService _exporter;
 
         private readonly TeacherService _teacherService;
 
@@ -27,10 +30,14 @@ namespace EducationSystem.ViewModels
             TeacherService teacherService,
             SubjectService subjectService,
             StudentService studentService,
-            GroupService groupService)
+            GroupService groupService,
+            GroupReportExportService exporter)
         {
             _analyticsService =
                 analyticsService;
+
+            _exporter =
+                exporter;
 
             _teacherService =
                 teacherService;
@@ -58,6 +65,10 @@ namespace EducationSystem.ViewModels
 
 
         public ObservableCollection<Group> Groups { get; }
+            = new();
+
+        // Кількість студентів у кожній групі для таблиці, діаграми та звітів.
+        public ObservableCollection<GroupEnrollmentRow> GroupRows { get; }
             = new();
 
 
@@ -159,6 +170,16 @@ namespace EducationSystem.ViewModels
         [ObservableProperty]
         private int topCount = 5;
 
+
+        // Підсумкові показники наповненості груп.
+        [ObservableProperty]
+        private int totalGroups;
+
+        [ObservableProperty]
+        private int totalStudents;
+
+        [ObservableProperty]
+        private double averageGroupSize;
 
         [ObservableProperty]
         private bool isLoading;
@@ -271,6 +292,18 @@ namespace EducationSystem.ViewModels
                         GroupSubjectStatistics,
                         groupStatistics
                     );
+
+                    // Завантаження чисельності груп у межах тієї самої команди Load.
+                    var enrollmentRows = await _analyticsService
+                        .GetGroupEnrollmentAsync();
+
+                    ReplaceCollection(GroupRows, enrollmentRows);
+
+                    TotalGroups = GroupRows.Count;
+                    TotalStudents = GroupRows.Sum(row => row.StudentCount);
+                    AverageGroupSize = TotalGroups == 0
+                        ? 0
+                        : (double)TotalStudents / TotalGroups;
                 }
             );
         }
@@ -306,7 +339,7 @@ namespace EducationSystem.ViewModels
         }
 
 
-        
+
 
         [RelayCommand]
         private async Task LoadTeacherWorkloadAsync()
@@ -662,6 +695,18 @@ namespace EducationSystem.ViewModels
                 string.Empty;
         }
 
+
+        // Викликаються з code-behind після вибору шляху в SaveFileDialog.
+        // Експорт використовує ті самі дані, які показані на екрані.
+        public void ExportExcel(string filePath)
+        {
+            _exporter.ExportExcel(filePath, GroupRows.ToList());
+        }
+
+        public void ExportPdf(string filePath)
+        {
+            _exporter.ExportPdf(filePath, GroupRows.ToList());
+        }
 
         private async Task ExecuteAsync(
             Func<Task> operation)

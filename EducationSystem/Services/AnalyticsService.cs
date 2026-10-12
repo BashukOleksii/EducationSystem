@@ -1,5 +1,6 @@
 ﻿using EducationSystem.DTOs.Analytics;
 using EducationSystem.Repositories.Interfaces;
+using SqlKata.Execution;
 
 namespace EducationSystem.Services
 {
@@ -270,6 +271,18 @@ namespace EducationSystem.Services
                     $"{parameterName} має бути більшим за нуль."
                 );
             }
+        }
+
+        public async Task<IReadOnlyList<GroupEnrollmentRow>> GetGroupEnrollmentAsync()
+        {
+            var rows = (await _analyticsRepository.GetGroupEnrollmentAsync()).ToList();
+            int total = rows.Sum(x => x.StudentCount);
+
+            foreach (var row in rows)
+                row.SharePercent = total == 0 ? 0 :
+                    Math.Round(100.0 * row.StudentCount / total, 1);
+
+            return rows;
         }
     }
 }

@@ -106,7 +106,7 @@ public sealed class GroupReportExportService
                 {
                     page.Size(PageSizes.A4);
                     page.Margin(35);
-                    page.DefaultTextStyle(x => x.FontFamily("Arial").FontSize(10));
+                    page.DefaultTextStyle(x => x.FontFamily("Lato").FontSize(10));
 
                     page.Header().Column(header =>
                     {

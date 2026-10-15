@@ -136,6 +136,7 @@
                   <SortExpressions>
                     <SortExpression>
                       <Value>=Fields!MonthKey.Value</Value>
+                      <Direction>Descending</Direction>
                     </SortExpression>
                   </SortExpressions>
                   <Label>=Fields!MonthKey.Value</Label>
@@ -469,7 +470,7 @@
               </Style>
             </ChartNoDataMessage>
             <DataSetName>LearningDynamicsData</DataSetName>
-            <Top>3.6cm</Top>
+            <Top>2.57639cm</Top>
             <Left>0.23473cm</Left>
             <Height>5.42333cm</Height>
             <Width>10.69617cm</Width>
@@ -706,7 +707,7 @@
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>LearningDynamicsData</DataSetName>
-            <Top>9.02333cm</Top>
+            <Top>7.99972cm</Top>
             <Left>0.19945cm</Left>
             <Height>1.2cm</Height>
             <Width>10.69616cm</Width>
@@ -739,7 +740,7 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox2</rd:DefaultName>
-            <Left>0.23473cm</Left>
+            <Left>0.27002cm</Left>
             <Height>0.6cm</Height>
             <Width>10.45064cm</Width>
             <ZIndex>2</ZIndex>
@@ -776,7 +777,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox4</rd:DefaultName>
             <Top>0.6cm</Top>
-            <Left>2.73473cm</Left>
+            <Left>2.77002cm</Left>
             <Height>0.6cm</Height>
             <Width>4.76527cm</Width>
             <ZIndex>3</ZIndex>
@@ -806,7 +807,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox6</rd:DefaultName>
             <Top>0.6cm</Top>
-            <Left>0.23473cm</Left>
+            <Left>0.27002cm</Left>
             <Height>0.6cm</Height>
             <Width>2.5cm</Width>
             <ZIndex>4</ZIndex>
@@ -836,7 +837,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox7</rd:DefaultName>
             <Top>1.2cm</Top>
-            <Left>0.23473cm</Left>
+            <Left>0.27002cm</Left>
             <Height>0.6cm</Height>
             <Width>2.5cm</Width>
             <ZIndex>5</ZIndex>
@@ -873,7 +874,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox8</rd:DefaultName>
             <Top>1.2cm</Top>
-            <Left>2.73473cm</Left>
+            <Left>2.77002cm</Left>
             <Height>0.6cm</Height>
             <Width>4.76527cm</Width>
             <ZIndex>6</ZIndex>
@@ -903,7 +904,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox9</rd:DefaultName>
             <Top>1.8cm</Top>
-            <Left>0.23473cm</Left>
+            <Left>0.27002cm</Left>
             <Height>0.6cm</Height>
             <Width>2.5cm</Width>
             <ZIndex>7</ZIndex>
@@ -940,143 +941,10 @@
             </Paragraphs>
             <rd:DefaultName>Textbox10</rd:DefaultName>
             <Top>1.8cm</Top>
-            <Left>2.73473cm</Left>
+            <Left>2.77002cm</Left>
             <Height>0.6cm</Height>
             <Width>4.76527cm</Width>
             <ZIndex>8</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox11">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Викладачів</Value>
-                    <Style />
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox11</rd:DefaultName>
-            <Top>2.4cm</Top>
-            <Left>0.23473cm</Left>
-            <Height>0.6cm</Height>
-            <Width>2.5cm</Width>
-            <ZIndex>9</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox12">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>=First(Fields!TotalTeachers.Value, "SummaryTotalsData"</Value>
-                    <Style>
-                      <FontStyle>Normal</FontStyle>
-                      <FontFamily>Times New Roman</FontFamily>
-                      <FontSize>12pt</FontSize>
-                      <FontWeight>Normal</FontWeight>
-                      <TextDecoration>None</TextDecoration>
-                      <Color>#000000</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox12</rd:DefaultName>
-            <Top>2.4cm</Top>
-            <Left>2.73473cm</Left>
-            <Height>0.6cm</Height>
-            <Width>4.76527cm</Width>
-            <ZIndex>10</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox13">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>Період</Value>
-                    <Style />
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox13</rd:DefaultName>
-            <Top>3cm</Top>
-            <Left>0.23473cm</Left>
-            <Height>0.6cm</Height>
-            <Width>2.5cm</Width>
-            <ZIndex>11</ZIndex>
-            <Style>
-              <Border>
-                <Style>None</Style>
-              </Border>
-              <PaddingLeft>2pt</PaddingLeft>
-              <PaddingRight>2pt</PaddingRight>
-              <PaddingTop>2pt</PaddingTop>
-              <PaddingBottom>2pt</PaddingBottom>
-            </Style>
-          </Textbox>
-          <Textbox Name="Textbox14">
-            <CanGrow>true</CanGrow>
-            <KeepTogether>true</KeepTogether>
-            <Paragraphs>
-              <Paragraph>
-                <TextRuns>
-                  <TextRun>
-                    <Value>=First(Fields!PeriodLabel.Value, "SummaryTotalsData")</Value>
-                    <Style>
-                      <FontStyle>Normal</FontStyle>
-                      <FontFamily>Courier New</FontFamily>
-                      <FontWeight>Normal</FontWeight>
-                      <TextDecoration>None</TextDecoration>
-                      <Color>#000000</Color>
-                    </Style>
-                  </TextRun>
-                </TextRuns>
-                <Style />
-              </Paragraph>
-            </Paragraphs>
-            <rd:DefaultName>Textbox14</rd:DefaultName>
-            <Top>3cm</Top>
-            <Left>2.73473cm</Left>
-            <Height>0.6cm</Height>
-            <Width>4.76527cm</Width>
-            <ZIndex>12</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -1098,7 +966,8 @@
                   </Group>
                   <SortExpressions>
                     <SortExpression>
-                      <Value>=Fields!SubjectName.Value</Value>
+                      <Value>=Fields!LessonsCount.Value</Value>
+                      <Direction>Descending</Direction>
                     </SortExpression>
                   </SortExpressions>
                   <Label>=Fields!SubjectName.Value</Label>
@@ -1433,11 +1302,11 @@
               </Style>
             </ChartNoDataMessage>
             <DataSetName>SubjectLessonsData</DataSetName>
-            <Top>10.22333cm</Top>
+            <Top>9.19972cm</Top>
             <Left>0.23473cm</Left>
             <Height>5cm</Height>
             <Width>10.66088cm</Width>
-            <ZIndex>13</ZIndex>
+            <ZIndex>9</ZIndex>
             <Style>
               <Border>
                 <Color>LightGrey</Color>
@@ -1793,10 +1662,10 @@
               </Style>
             </ChartNoDataMessage>
             <DataSetName>GroupLessonsData</DataSetName>
-            <Top>15.22333cm</Top>
+            <Top>14.19972cm</Top>
             <Height>5cm</Height>
             <Width>10.9309cm</Width>
-            <ZIndex>14</ZIndex>
+            <ZIndex>10</ZIndex>
             <Style>
               <Border>
                 <Color>LightGrey</Color>
@@ -1827,11 +1696,11 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox15</rd:DefaultName>
-            <Top>20.36444cm</Top>
+            <Top>19.34083cm</Top>
             <Left>0.19945cm</Left>
             <Height>0.6cm</Height>
             <Width>10.48591cm</Width>
-            <ZIndex>15</ZIndex>
+            <ZIndex>11</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -1843,10 +1712,10 @@
             </Style>
           </Textbox>
         </ReportItems>
-        <Height>8.25372in</Height>
+        <Height>7.85072in</Height>
         <Style />
       </Body>
-      <Width>4.3035in</Width>
+      <Width>4.3174in</Width>
       <Page>
         <PageHeight>29.7cm</PageHeight>
         <PageWidth>21cm</PageWidth>

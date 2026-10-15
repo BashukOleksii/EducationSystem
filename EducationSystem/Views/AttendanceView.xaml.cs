@@ -4,10 +4,11 @@ using Microsoft.Win32;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace EducationSystem.Views;
 
-public partial class AttendanceView : UserControl
+public partial class AttendanceView : System.Windows.Controls.UserControl
 {
     private readonly AttendanceViewModel _viewModel;
     private bool _loadedOnce;
@@ -98,7 +99,7 @@ public partial class AttendanceView : UserControl
     {
         if (_viewModel.IsLoading || _viewModel.Report.Groups.Count == 0)
         {
-            MessageBox.Show("Дочекайтеся завантаження або виберіть групу з даними.",
+            System.Windows.MessageBox.Show("Дочекайтеся завантаження або виберіть групу з даними.",
                 "EducationSystem", MessageBoxButton.OK, MessageBoxImage.Information);
             return false;
         }
@@ -107,18 +108,18 @@ public partial class AttendanceView : UserControl
             _viewModel.Report.FromDate != _viewModel.FromDate?.Date ||
             _viewModel.Report.ToDate != _viewModel.ToDate?.Date)
         {
-            MessageBox.Show("Спочатку натисніть «Показати», щоб застосувати фільтри.",
+            System.Windows.MessageBox.Show("Спочатку натисніть «Показати», щоб застосувати фільтри.",
                 "EducationSystem", MessageBoxButton.OK, MessageBoxImage.Information);
             return false;
         }
         return true;
     }
 
-    private static void ShowSuccess(string path) => MessageBox.Show(
+    private static void ShowSuccess(string path) => System.Windows.MessageBox.Show(
         $"Звіт збережено:\n{path}", "EducationSystem",
         MessageBoxButton.OK, MessageBoxImage.Information);
 
-    private static void ShowError(Exception e) => MessageBox.Show(
+    private static void ShowError(Exception e) => System.Windows.MessageBox.Show(
         $"Не вдалося зберегти звіт:\n{e.Message}", "Помилка експорту",
         MessageBoxButton.OK, MessageBoxImage.Error);
 }

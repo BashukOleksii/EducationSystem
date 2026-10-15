@@ -2,6 +2,8 @@
 using EducationSystem.Configuration;
 using EducationSystem.Data;
 using System.Windows;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace EducationSystem
 {

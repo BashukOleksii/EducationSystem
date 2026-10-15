@@ -4,10 +4,11 @@ using Microsoft.Win32;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace EducationSystem.Views;
 
-public partial class GroupEnrollmentView : UserControl
+public partial class GroupEnrollmentView : System.Windows.Controls.UserControl
 {
     private readonly AnalyticsViewModel _viewModel;
 
@@ -122,7 +123,7 @@ public partial class GroupEnrollmentView : UserControl
     {
         if (_viewModel.IsLoading)
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "Спочатку дочекайтеся завершення завантаження даних.",
                 "EducationSystem",
                 MessageBoxButton.OK,
@@ -132,7 +133,7 @@ public partial class GroupEnrollmentView : UserControl
 
         if (_viewModel.GroupRows.Count == 0)
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "Немає активних груп для формування звіту.",
                 "EducationSystem",
                 MessageBoxButton.OK,
@@ -145,7 +146,7 @@ public partial class GroupEnrollmentView : UserControl
 
     private static void ShowSuccess(string path)
     {
-        MessageBox.Show(
+        System.Windows.MessageBox.Show(
             $"Звіт успішно збережено:\n{path}",
             "EducationSystem",
             MessageBoxButton.OK,
@@ -154,7 +155,7 @@ public partial class GroupEnrollmentView : UserControl
 
     private static void ShowError(Exception exception)
     {
-        MessageBox.Show(
+        System.Windows.MessageBox.Show(
             $"Не вдалося сформувати звіт:\n{exception.Message}",
             "Помилка експорту",
             MessageBoxButton.OK,

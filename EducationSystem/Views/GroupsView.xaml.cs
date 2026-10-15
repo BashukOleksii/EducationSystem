@@ -4,7 +4,7 @@ using EducationSystem.ViewModels;
 
 namespace EducationSystem.Views;
 
-public partial class GroupsView : UserControl
+public partial class GroupsView : System.Windows.Controls.UserControl
 {
     private readonly GroupsViewModel _viewModel;
 

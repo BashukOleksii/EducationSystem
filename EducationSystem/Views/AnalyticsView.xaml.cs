@@ -5,10 +5,11 @@ using EducationSystem.ViewModels;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using Application = System.Windows.Application;
 
 namespace EducationSystem.Views;
 
-public partial class AnalyticsView : UserControl
+public partial class AnalyticsView : System.Windows.Controls.UserControl
 {
     private readonly AnalyticsViewModel _viewModel;
 
@@ -26,7 +27,7 @@ public partial class AnalyticsView : UserControl
         if (Content is not Grid root)
             throw new InvalidOperationException("Не знайдено кореневий Grid сторінки аналітики.");
 
-        TabControl? mainTabs = root.Children.OfType<TabControl>().FirstOrDefault();
+        System.Windows.Controls.TabControl? mainTabs = root.Children.OfType<System.Windows.Controls.TabControl>().FirstOrDefault();
         if (mainTabs is null)
             throw new InvalidOperationException("Не знайдено TabControl сторінки аналітики.");
 
@@ -64,6 +65,27 @@ public partial class AnalyticsView : UserControl
             Header = "Відвідуваність",
             Content = new AttendanceView(attendanceViewModel)
         });
+
+
+        // Репозиторій статистики занять
+        LearningDynamicsRepository dynamicsRepository =
+            new LearningDynamicsRepository(factory);
+
+        // Сервіс
+        LearningDynamicsService dynamicsService =
+            new LearningDynamicsService(dynamicsRepository);
+
+        // ViewModel
+        LearningDynamicsViewModel dynamicsViewModel =
+            new LearningDynamicsViewModel(dynamicsService);
+
+        // Нова вкладка
+        mainTabs.Items.Add(new TabItem
+        {
+            Header = "Динаміка занять (RDLC)",
+            Content = new LearningDynamicsView(dynamicsViewModel)
+        });
+
     }
 
     private async void AnalyticsView_Loaded(object sender, RoutedEventArgs e)

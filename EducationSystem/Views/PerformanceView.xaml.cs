@@ -4,10 +4,12 @@ using Microsoft.Win32;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
+using MessageBox = System.Windows.MessageBox;
+using SaveFileDialog = Microsoft.Win32.SaveFileDialog;
 
 namespace EducationSystem.Views;
 
-public partial class PerformanceView : UserControl
+public partial class PerformanceView : System.Windows.Controls.UserControl
 {
     private readonly PerformanceViewModel _viewModel;
     private bool _wasLoaded;
@@ -99,7 +101,7 @@ public partial class PerformanceView : UserControl
     {
         if (_viewModel.IsLoading || _viewModel.Report.Groups.Count == 0)
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "Дочекайтеся завантаження або виберіть групу з даними.",
                 "EducationSystem",
                 MessageBoxButton.OK,
@@ -110,7 +112,7 @@ public partial class PerformanceView : UserControl
             _viewModel.Report.FromDate != _viewModel.FromDate?.Date ||
             _viewModel.Report.ToDate != _viewModel.ToDate?.Date)
         {
-            MessageBox.Show(
+            System.Windows.MessageBox.Show(
                 "Спочатку натисніть «Показати», щоб застосувати змінені фільтри.",
                 "EducationSystem",
                 MessageBoxButton.OK,
@@ -120,7 +122,7 @@ public partial class PerformanceView : UserControl
         return true;
     }
 
-    private static void ShowSuccess(string path) => MessageBox.Show(
+    private static void ShowSuccess(string path) => System.Windows.MessageBox.Show(
         $"Звіт збережено:\n{path}", "EducationSystem",
         MessageBoxButton.OK, MessageBoxImage.Information);
 

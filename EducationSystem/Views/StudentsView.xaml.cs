@@ -4,7 +4,7 @@ using EducationSystem.ViewModels;
 
 namespace EducationSystem.Views
 {
-    public partial class StudentsView : UserControl
+    public partial class StudentsView : System.Windows.Controls.UserControl
     {
         private readonly StudentsViewModel _viewModel;
 

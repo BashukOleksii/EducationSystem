@@ -3,6 +3,8 @@ using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using DataGrid = System.Windows.Controls.DataGrid;
+using UserControl = System.Windows.Controls.UserControl;
 
 namespace EducationSystem.Controls
 {
@@ -334,7 +336,7 @@ namespace EducationSystem.Controls
 
 
                 if (boundColumn.Binding
-                    is not Binding binding)
+                    is not System.Windows.Data.Binding binding)
                 {
                     continue;
                 }

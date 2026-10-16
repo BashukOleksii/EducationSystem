@@ -1,0 +1,1348 @@
+﻿<UserControl x:Class="EducationSystem.Views.AnalyticsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             d:DesignWidth="1200"
+             d:DesignHeight="750">
+
+    <Grid Margin="24">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+
+        <!-- =========================
+             Заголовок
+             ========================= -->
+
+        <Grid Grid.Row="0"
+              Margin="0,0,0,20">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <StackPanel Grid.Column="0">
+
+                <TextBlock
+                    Text="Аналітика"
+                    FontSize="28"
+                    FontWeight="SemiBold"/>
+
+                <TextBlock
+                    Text="Статистика навчального процесу"
+                    Foreground="Gray"
+                    Margin="0,4,0,0"/>
+
+            </StackPanel>
+
+
+            <Button
+                Grid.Column="1"
+                Content="Очистити фільтри"
+                Width="140"
+                Height="36"
+                VerticalAlignment="Center"
+                Command="{Binding ClearFiltersCommand}"/>
+
+        </Grid>
+
+
+        <!-- =========================
+             Основні вкладки
+             ========================= -->
+
+        <TabControl Grid.Row="1">
+
+
+            <!-- ==================================================
+                 ВИКЛАДАЧІ
+                 ================================================== -->
+
+            <TabItem Header="Викладачі">
+
+                <TabControl Margin="8">
+
+
+                    <!-- ==========================================
+                         Викладачі + предмети
+                         ========================================== -->
+
+                    <TabItem Header="Предмети викладачів">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <!-- Фільтри -->
+
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,14">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Text="Викладач:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <ComboBox
+                                    Grid.Column="1"
+                                    Height="34"
+                                    Margin="0,0,18,0"
+                                    ItemsSource="{Binding Teachers}"
+                                    SelectedItem="{Binding SelectedTeacherFilter}"
+                                    DisplayMemberPath="FullName"/>
+
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="Предмет:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <ComboBox
+                                    Grid.Column="3"
+                                    Height="34"
+                                    Margin="0,0,18,0"
+                                    ItemsSource="{Binding Subjects}"
+                                    SelectedItem="{Binding SelectedSubjectFilter}"
+                                    DisplayMemberPath="Name"/>
+
+
+                                <Button
+                                    Grid.Column="4"
+                                    Content="Показати"
+                                    Width="110"
+                                    Height="34"
+                                    Command="{Binding LoadTeacherSubjectStatisticsCommand}"/>
+
+                            </Grid>
+
+
+                            <!-- Таблиця -->
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding TeacherSubjectStatistics}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False"
+                                SelectionMode="Single"
+                                SelectionUnit="FullRow">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Викладач"
+                                        Binding="{Binding TeacherFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Предмет"
+                                        Binding="{Binding SubjectName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="План, год."
+                                        Binding="{Binding PlannedHours}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Занять"
+                                        Binding="{Binding LessonCount}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Проведено, год."
+                                        Binding="{Binding ConductedHours}"
+                                        Width="120"/>
+
+                                    <DataGridTextColumn
+                                        Header="Груп"
+                                        Binding="{Binding GroupCount}"
+                                        Width="70"/>
+
+                                    <DataGridTextColumn
+                                        Header="Підгрупа"
+                                        Binding="{Binding SubgroupText}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="Перше заняття"
+                                        Binding="{Binding FirstLessonDate,
+                                                          StringFormat=dd.MM.yyyy}"
+                                        Width="110"/>
+
+                                    <DataGridTextColumn
+                                        Header="Останнє заняття"
+                                        Binding="{Binding LastLessonDate,
+                                                          StringFormat=dd.MM.yyyy}"
+                                        Width="120"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+
+                    <!-- ==========================================
+                         Загальне навантаження
+                         ========================================== -->
+
+                    <TabItem Header="Загальне навантаження">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <Button
+                                Grid.Row="0"
+                                Content="Оновити"
+                                Width="110"
+                                Height="34"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                Command="{Binding LoadTeacherWorkloadCommand}"/>
+
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding TeacherWorkloads}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False"
+                                SelectionMode="Single"
+                                SelectionUnit="FullRow">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Викладач"
+                                        Binding="{Binding TeacherFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Категорія"
+                                        Binding="{Binding TeacherCategory}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Предметів"
+                                        Binding="{Binding ActiveSubjectCount}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="План, год."
+                                        Binding="{Binding ActivePlannedHours}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Занять"
+                                        Binding="{Binding LessonCount}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Проведено, год."
+                                        Binding="{Binding ConductedHours}"
+                                        Width="120"/>
+
+                                    <DataGridTextColumn
+                                        Header="Груп"
+                                        Binding="{Binding GroupCount}"
+                                        Width="70"/>
+
+
+                                    <DataGridTemplateColumn
+                                        Header=""
+                                        Width="120">
+
+                                        <DataGridTemplateColumn.CellTemplate>
+
+                                            <DataTemplate>
+
+                                                <Button
+                                                    Content="Детальніше"
+                                                    Margin="4"
+                                                    Command="{Binding
+                                                        DataContext.ShowTeacherLessonsCommand,
+                                                        RelativeSource={RelativeSource
+                                                            AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}"/>
+
+                                            </DataTemplate>
+
+                                        </DataGridTemplateColumn.CellTemplate>
+
+                                    </DataGridTemplateColumn>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+
+                            <!-- Деталі викладача -->
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Text="{Binding DetailsTitle}"
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Margin="0,16,0,8"/>
+
+
+                            <DataGrid
+                                Grid.Row="3"
+                                ItemsSource="{Binding TeacherLessons}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Дата"
+                                        Binding="{Binding LessonDate,
+                                                          StringFormat=dd.MM.yyyy}"
+                                        Width="110"/>
+
+                                    <DataGridTextColumn
+                                        Header="Тема"
+                                        Binding="{Binding LessonTitle}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Предмет"
+                                        Binding="{Binding SubjectName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Група"
+                                        Binding="{Binding GroupName}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Підгрупа"
+                                        Binding="{Binding SubgroupText}"
+                                        Width="90"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+
+                    <!-- ==========================================
+                         Викладачі без занять
+                         ========================================== -->
+
+                    <TabItem Header="Без проведених занять">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <Button
+                                Grid.Row="0"
+                                Content="Показати"
+                                Width="110"
+                                Height="34"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                Command="{Binding LoadTeachersWithoutLessonsCommand}"/>
+
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding TeachersWithoutLessons}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Викладач"
+                                        Binding="{Binding TeacherFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Email"
+                                        Binding="{Binding TeacherEmail}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Категорія"
+                                        Binding="{Binding TeacherCategory}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Активних предметів"
+                                        Binding="{Binding ActiveSubjectCount}"
+                                        Width="140"/>
+
+                                    <DataGridTextColumn
+                                        Header="Планових годин"
+                                        Binding="{Binding ActivePlannedHours}"
+                                        Width="130"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+                </TabControl>
+
+            </TabItem>
+
+
+            <!-- ==================================================
+                 ПРЕДМЕТИ
+                 ================================================== -->
+
+            <TabItem Header="Предмети">
+
+                <Grid Margin="16">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="2*"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+
+                    <Button
+                        Grid.Row="0"
+                        Content="Оновити статистику"
+                        Width="160"
+                        Height="34"
+                        HorizontalAlignment="Left"
+                        Margin="0,0,0,12"
+                        Command="{Binding LoadSubjectStatisticsCommand}"/>
+
+
+                    <!-- Загальна статистика предметів -->
+
+                    <DataGrid
+                        Grid.Row="1"
+                        ItemsSource="{Binding SubjectStatistics}"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        CanUserAddRows="False">
+
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn
+                                Header="Предмет"
+                                Binding="{Binding SubjectName}"
+                                Width="2*"/>
+
+                            <DataGridTextColumn
+                                Header="План, год."
+                                Binding="{Binding PlannedHours}"
+                                Width="90"/>
+
+                            <DataGridTextColumn
+                                Header="Проведено, год."
+                                Binding="{Binding ConductedHours}"
+                                Width="120"/>
+
+                            <DataGridTextColumn
+                                Header="Залишилось, год."
+                                Binding="{Binding RemainingHours}"
+                                Width="120"/>
+
+                            <DataGridTextColumn
+                                Header="Занять"
+                                Binding="{Binding LessonCount}"
+                                Width="75"/>
+
+                            <DataGridTextColumn
+                                Header="Викладачів"
+                                Binding="{Binding TeacherCount}"
+                                Width="90"/>
+
+                            <DataGridTextColumn
+                                Header="Груп"
+                                Binding="{Binding GroupCount}"
+                                Width="70"/>
+
+                            <DataGridTextColumn
+                                Header="Студентів"
+                                Binding="{Binding StudentCount}"
+                                Width="90"/>
+
+                            <DataGridTextColumn
+                                Header="Сер. бал"
+                                Binding="{Binding AverageGrade,
+                                                  StringFormat=F2}"
+                                Width="80"/>
+
+                            <DataGridTextColumn
+                                Header="Пропусків"
+                                Binding="{Binding MissingCount}"
+                                Width="90"/>
+
+                            <DataGridTextColumn
+                                Header="Відвідування, %"
+                                Binding="{Binding AttendancePercent,
+                                                  StringFormat=F2}"
+                                Width="120"/>
+
+
+                            <DataGridTemplateColumn
+                                Header=""
+                                Width="120">
+
+                                <DataGridTemplateColumn.CellTemplate>
+
+                                    <DataTemplate>
+
+                                        <Button
+                                            Content="Детальніше"
+                                            Margin="4"
+                                            Command="{Binding
+                                                DataContext.ShowSubjectLessonsCommand,
+                                                RelativeSource={RelativeSource
+                                                    AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"/>
+
+                                    </DataTemplate>
+
+                                </DataGridTemplateColumn.CellTemplate>
+
+                            </DataGridTemplateColumn>
+
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+
+                    <TextBlock
+                        Grid.Row="2"
+                        Text="{Binding DetailsTitle}"
+                        FontSize="18"
+                        FontWeight="SemiBold"
+                        Margin="0,16,0,8"/>
+
+
+                    <!-- Детальні заняття предмета -->
+
+                    <DataGrid
+                        Grid.Row="3"
+                        ItemsSource="{Binding SubjectLessons}"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        CanUserAddRows="False">
+
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn
+                                Header="Дата"
+                                Binding="{Binding LessonDate,
+                                                  StringFormat=dd.MM.yyyy}"
+                                Width="110"/>
+
+                            <DataGridTextColumn
+                                Header="Тема"
+                                Binding="{Binding LessonTitle}"
+                                Width="2*"/>
+
+                            <DataGridTextColumn
+                                Header="Викладач"
+                                Binding="{Binding TeacherFullName}"
+                                Width="2*"/>
+
+                            <DataGridTextColumn
+                                Header="Група"
+                                Binding="{Binding GroupName}"
+                                Width="100"/>
+
+                            <DataGridTextColumn
+                                Header="Підгрупа"
+                                Binding="{Binding SubgroupText}"
+                                Width="90"/>
+
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+                </Grid>
+
+            </TabItem>
+
+
+            <!-- ==================================================
+                 СТУДЕНТИ
+                 ================================================== -->
+
+            <TabItem Header="Студенти">
+
+                <TabControl Margin="8">
+
+
+                    <!-- ==========================================
+                         Статистика студента за предметом
+                         ========================================== -->
+
+                    <TabItem Header="За предметами">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="2*"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <!-- Фільтри -->
+
+                            <Grid Grid.Row="0"
+                                  Margin="0,0,0,12">
+
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="220"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+
+
+                                <TextBlock
+                                    Grid.Column="0"
+                                    Text="Студент:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <ComboBox
+                                    Grid.Column="1"
+                                    Height="34"
+                                    Margin="0,0,18,0"
+                                    ItemsSource="{Binding Students}"
+                                    SelectedItem="{Binding SelectedStudentFilter}"
+                                    DisplayMemberPath="FullName"/>
+
+
+                                <TextBlock
+                                    Grid.Column="2"
+                                    Text="Предмет:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <ComboBox
+                                    Grid.Column="3"
+                                    Height="34"
+                                    Margin="0,0,18,0"
+                                    ItemsSource="{Binding Subjects}"
+                                    SelectedItem="{Binding SelectedSubjectFilter}"
+                                    DisplayMemberPath="Name"/>
+
+
+                                <Button
+                                    Grid.Column="4"
+                                    Content="Показати"
+                                    Width="110"
+                                    Height="34"
+                                    Command="{Binding LoadStudentSubjectStatisticsCommand}"/>
+
+                            </Grid>
+
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding StudentSubjectStatistics}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Студент"
+                                        Binding="{Binding StudentFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Група"
+                                        Binding="{Binding GroupName}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Предмет"
+                                        Binding="{Binding SubjectName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Занять"
+                                        Binding="{Binding LessonCount}"
+                                        Width="75"/>
+
+                                    <DataGridTextColumn
+                                        Header="Оцінок"
+                                        Binding="{Binding GradeCount}"
+                                        Width="70"/>
+
+                                    <DataGridTextColumn
+                                        Header="Сер. бал"
+                                        Binding="{Binding AverageGrade,
+                                                          StringFormat=F2}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Присутній"
+                                        Binding="{Binding PresentCount}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="Пропусків"
+                                        Binding="{Binding MissingCount}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="Відвідування, %"
+                                        Binding="{Binding AttendancePercent,
+                                                          StringFormat=F2}"
+                                        Width="120"/>
+
+
+                                    <DataGridTemplateColumn
+                                        Header=""
+                                        Width="120">
+
+                                        <DataGridTemplateColumn.CellTemplate>
+
+                                            <DataTemplate>
+
+                                                <Button
+                                                    Content="Детальніше"
+                                                    Margin="4"
+                                                    Command="{Binding
+                                                        DataContext.ShowStudentSubjectDetailsCommand,
+                                                        RelativeSource={RelativeSource
+                                                            AncestorType=DataGrid}}"
+                                                    CommandParameter="{Binding}"/>
+
+                                            </DataTemplate>
+
+                                        </DataGridTemplateColumn.CellTemplate>
+
+                                    </DataGridTemplateColumn>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+
+                            <TextBlock
+                                Grid.Row="2"
+                                Text="{Binding DetailsTitle}"
+                                FontSize="18"
+                                FontWeight="SemiBold"
+                                Margin="0,16,0,8"/>
+
+
+                            <!-- Деталі студента -->
+
+                            <DataGrid
+                                Grid.Row="3"
+                                ItemsSource="{Binding StudentSubjectDetails}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Дата"
+                                        Binding="{Binding LessonDate,
+                                                          StringFormat=dd.MM.yyyy}"
+                                        Width="110"/>
+
+                                    <DataGridTextColumn
+                                        Header="Тема"
+                                        Binding="{Binding LessonTitle}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Викладач"
+                                        Binding="{Binding TeacherFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Оцінка"
+                                        Binding="{Binding GradeText}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Відвідування"
+                                        Binding="{Binding AttendanceStatusText}"
+                                        Width="120"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+
+                    <!-- ==========================================
+                         Загальна статистика студентів
+                         ========================================== -->
+
+                    <TabItem Header="Загальна статистика">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <Button
+                                Grid.Row="0"
+                                Content="Оновити"
+                                Width="110"
+                                Height="34"
+                                HorizontalAlignment="Left"
+                                Margin="0,0,0,12"
+                                Command="{Binding LoadStudentOverallStatisticsCommand}"/>
+
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding StudentOverallStatistics}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Студент"
+                                        Binding="{Binding StudentFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Група"
+                                        Binding="{Binding GroupName}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Предметів"
+                                        Binding="{Binding SubjectCount}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Занять"
+                                        Binding="{Binding LessonCount}"
+                                        Width="75"/>
+
+                                    <DataGridTextColumn
+                                        Header="Оцінок"
+                                        Binding="{Binding GradeCount}"
+                                        Width="70"/>
+
+                                    <DataGridTextColumn
+                                        Header="Сер. бал"
+                                        Binding="{Binding AverageGrade,
+                                                          StringFormat=F2}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Присутностей"
+                                        Binding="{Binding PresentCount}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Пропусків"
+                                        Binding="{Binding MissingCount}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="Відвідування, %"
+                                        Binding="{Binding AttendancePercent,
+                                                          StringFormat=F2}"
+                                        Width="120"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+
+                    <!-- ==========================================
+                         Група ризику
+                         ========================================== -->
+
+                    <TabItem Header="Група ризику">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <StackPanel
+                                Grid.Row="0"
+                                Orientation="Horizontal"
+                                Margin="0,0,0,12">
+
+
+                                <TextBlock
+                                    Text="Середній бал нижче:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <TextBox
+                                    Width="80"
+                                    Height="34"
+                                    VerticalContentAlignment="Center"
+                                    Margin="0,0,18,0"
+                                    Text="{Binding MaxAverageGrade,
+                                                   UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                                <TextBlock
+                                    Text="Пропусків від:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <TextBox
+                                    Width="80"
+                                    Height="34"
+                                    VerticalContentAlignment="Center"
+                                    Margin="0,0,18,0"
+                                    Text="{Binding MinMissingCount,
+                                                   UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                                <Button
+                                    Content="Показати"
+                                    Width="110"
+                                    Height="34"
+                                    Command="{Binding LoadAtRiskStudentsCommand}"/>
+
+                            </StackPanel>
+
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding AtRiskStudents}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Студент"
+                                        Binding="{Binding StudentFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Група"
+                                        Binding="{Binding GroupName}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Середній бал"
+                                        Binding="{Binding AverageGrade,
+                                                          StringFormat=F2}"
+                                        Width="110"/>
+
+                                    <DataGridTextColumn
+                                        Header="Пропуски"
+                                        Binding="{Binding MissingCount}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="Відвідування, %"
+                                        Binding="{Binding AttendancePercent,
+                                                          StringFormat=F2}"
+                                        Width="120"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+
+                    <!-- ==========================================
+                         TOP студентів
+                         ========================================== -->
+
+                    <TabItem Header="Рейтинг">
+
+                        <Grid Margin="12">
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+
+
+                            <StackPanel
+                                Grid.Row="0"
+                                Orientation="Horizontal"
+                                Margin="0,0,0,12">
+
+
+                                <TextBlock
+                                    Text="Предмет:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <ComboBox
+                                    Width="240"
+                                    Height="34"
+                                    Margin="0,0,18,0"
+                                    ItemsSource="{Binding Subjects}"
+                                    SelectedItem="{Binding SelectedSubjectFilter}"
+                                    DisplayMemberPath="Name"/>
+
+
+                                <TextBlock
+                                    Text="Кількість:"
+                                    VerticalAlignment="Center"
+                                    Margin="0,0,8,0"/>
+
+
+                                <TextBox
+                                    Width="70"
+                                    Height="34"
+                                    Margin="0,0,18,0"
+                                    VerticalContentAlignment="Center"
+                                    Text="{Binding TopCount,
+                                                   UpdateSourceTrigger=PropertyChanged}"/>
+
+
+                                <Button
+                                    Content="Показати"
+                                    Width="110"
+                                    Height="34"
+                                    Command="{Binding LoadTopStudentsCommand}"/>
+
+                            </StackPanel>
+
+
+                            <DataGrid
+                                Grid.Row="1"
+                                ItemsSource="{Binding TopStudents}"
+                                AutoGenerateColumns="False"
+                                IsReadOnly="True"
+                                CanUserAddRows="False">
+
+                                <DataGrid.Columns>
+
+                                    <DataGridTextColumn
+                                        Header="Студент"
+                                        Binding="{Binding StudentFullName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Група"
+                                        Binding="{Binding GroupName}"
+                                        Width="100"/>
+
+                                    <DataGridTextColumn
+                                        Header="Предмет"
+                                        Binding="{Binding SubjectName}"
+                                        Width="2*"/>
+
+                                    <DataGridTextColumn
+                                        Header="Середній бал"
+                                        Binding="{Binding AverageGrade,
+                                                          StringFormat=F2}"
+                                        Width="110"/>
+
+                                    <DataGridTextColumn
+                                        Header="Оцінок"
+                                        Binding="{Binding GradeCount}"
+                                        Width="80"/>
+
+                                    <DataGridTextColumn
+                                        Header="Пропусків"
+                                        Binding="{Binding MissingCount}"
+                                        Width="90"/>
+
+                                    <DataGridTextColumn
+                                        Header="Відвідування, %"
+                                        Binding="{Binding AttendancePercent,
+                                                          StringFormat=F2}"
+                                        Width="120"/>
+
+                                </DataGrid.Columns>
+
+                            </DataGrid>
+
+                        </Grid>
+
+                    </TabItem>
+
+                </TabControl>
+
+            </TabItem>
+
+
+            <!-- ==================================================
+                 ГРУПИ
+                 ================================================== -->
+
+            <TabItem Header="Групи">
+
+                <Grid Margin="16">
+
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+
+                    <!-- Фільтри -->
+
+                    <Grid Grid.Row="0"
+                          Margin="0,0,0,14">
+
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="200"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+
+                        <TextBlock
+                            Grid.Column="0"
+                            Text="Група:"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0"/>
+
+
+                        <ComboBox
+                            Grid.Column="1"
+                            Height="34"
+                            Margin="0,0,18,0"
+                            ItemsSource="{Binding Groups}"
+                            SelectedItem="{Binding SelectedGroupFilter}"
+                            DisplayMemberPath="Name"/>
+
+
+                        <TextBlock
+                            Grid.Column="2"
+                            Text="Предмет:"
+                            VerticalAlignment="Center"
+                            Margin="0,0,8,0"/>
+
+
+                        <ComboBox
+                            Grid.Column="3"
+                            Height="34"
+                            Margin="0,0,18,0"
+                            ItemsSource="{Binding Subjects}"
+                            SelectedItem="{Binding SelectedSubjectFilter}"
+                            DisplayMemberPath="Name"/>
+
+
+                        <Button
+                            Grid.Column="4"
+                            Content="Показати"
+                            Width="110"
+                            Height="34"
+                            Command="{Binding LoadGroupSubjectStatisticsCommand}"/>
+
+                    </Grid>
+
+
+                    <DataGrid
+                        Grid.Row="1"
+                        ItemsSource="{Binding GroupSubjectStatistics}"
+                        AutoGenerateColumns="False"
+                        IsReadOnly="True"
+                        CanUserAddRows="False">
+
+                        <DataGrid.Columns>
+
+                            <DataGridTextColumn
+                                Header="Група"
+                                Binding="{Binding GroupName}"
+                                Width="110"/>
+
+                            <DataGridTextColumn
+                                Header="Предмет"
+                                Binding="{Binding SubjectName}"
+                                Width="2*"/>
+
+                            <DataGridTextColumn
+                                Header="Студентів"
+                                Binding="{Binding StudentCount}"
+                                Width="90"/>
+
+                            <DataGridTextColumn
+                                Header="Занять"
+                                Binding="{Binding LessonCount}"
+                                Width="80"/>
+
+                            <DataGridTextColumn
+                                Header="Проведено, год."
+                                Binding="{Binding ConductedHours}"
+                                Width="120"/>
+
+                            <DataGridTextColumn
+                                Header="Оцінок"
+                                Binding="{Binding GradeCount}"
+                                Width="80"/>
+
+                            <DataGridTextColumn
+                                Header="Сер. бал"
+                                Binding="{Binding AverageGrade,
+                                                  StringFormat=F2}"
+                                Width="80"/>
+
+                            <DataGridTextColumn
+                                Header="Присутностей"
+                                Binding="{Binding PresentCount}"
+                                Width="100"/>
+
+                            <DataGridTextColumn
+                                Header="Пропусків"
+                                Binding="{Binding MissingCount}"
+                                Width="90"/>
+
+                            <DataGridTextColumn
+                                Header="Відвідування, %"
+                                Binding="{Binding AttendancePercent,
+                                                  StringFormat=F2}"
+                                Width="120"/>
+
+                        </DataGrid.Columns>
+
+                    </DataGrid>
+
+                </Grid>
+
+            </TabItem>
+
+        </TabControl>
+
+
+        <!-- =========================
+             Нижня панель
+             ========================= -->
+
+        <Grid Grid.Row="2"
+              Margin="0,14,0,0">
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+
+            <TextBlock
+                Grid.Column="0"
+                Text="{Binding Message}"
+                TextWrapping="Wrap"
+                VerticalAlignment="Center"/>
+
+
+            <TextBlock
+                Grid.Column="1"
+                Text="Завантаження..."
+                FontStyle="Italic"
+                Foreground="Gray"
+                VerticalAlignment="Center">
+
+                <TextBlock.Style>
+
+                    <Style TargetType="TextBlock">
+
+                        <Setter
+                            Property="Visibility"
+                            Value="Collapsed"/>
+
+                        <Style.Triggers>
+
+                            <DataTrigger
+                                Binding="{Binding IsLoading}"
+                                Value="True">
+
+                                <Setter
+                                    Property="Visibility"
+                                    Value="Visible"/>
+
+                            </DataTrigger>
+
+                        </Style.Triggers>
+
+                    </Style>
+
+                </TextBlock.Style>
+
+            </TextBlock>
+
+        </Grid>
+
+    </Grid>
+
+</UserControl>

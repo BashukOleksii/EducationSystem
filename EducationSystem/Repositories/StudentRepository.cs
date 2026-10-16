@@ -22,6 +22,47 @@ namespace EducationSystem.Repositories
                 connectionFactory;
         }
 
+        public async Task<IReadOnlyList<StudentListItem>>
+    GetAllAsync()
+        {
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
+
+
+            IEnumerable<StudentListItem> students =
+                await db
+                    .Query(TableName)
+
+                    .Join(
+                        "groups",
+                        "groups.id",
+                        "students.group_id"
+                    )
+
+                    .Select(
+                        "students.id",
+                        "students.first_name",
+                        "students.last_name",
+                        "students.email",
+                        "students.group_id",
+
+                        "groups.prefix as group_prefix",
+                        "groups.number as group_number"
+                    )
+
+                    .OrderBy(
+                        "students.last_name"
+                    )
+
+                    .OrderBy(
+                        "students.first_name"
+                    )
+
+                    .GetAsync<StudentListItem>();
+
+
+            return students.ToList();
+        }
 
         public async Task<PagedResult<StudentListItem>> GetPagedAsync(
             string? search,

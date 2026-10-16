@@ -15,6 +15,8 @@ namespace EducationSystem.Repositories.Interfaces
 
         Task<Student?> GetByIdAsync(int id);
 
+        Task<IReadOnlyList<StudentListItem>> GetAllAsync();
+
         Task<bool> ExistsByEmailAsync(
             string email,
             int? excludeId = null

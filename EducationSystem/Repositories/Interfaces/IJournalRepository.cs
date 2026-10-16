@@ -19,5 +19,9 @@ namespace EducationSystem.Repositories.Interfaces
             byte? grade,
             AttendanceStatus? attendanceStatus
         );
+
+        Task SavePageAsync(
+            int lessonId,
+            IReadOnlyList<JournalStudentItem> items);
     }
 }

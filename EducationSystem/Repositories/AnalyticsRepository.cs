@@ -1,4 +1,5 @@
-﻿using EducationSystem.Data;
+﻿using Dapper;
+using EducationSystem.Data;
 using EducationSystem.DTOs.Analytics;
 using EducationSystem.Repositories.Interfaces;
 using SqlKata;
@@ -324,6 +325,7 @@ namespace EducationSystem.Repositories
             return items.ToList();
         }
 
+
         public async Task<IReadOnlyList<StudentOverallStatisticsItem>>
             GetAtRiskStudentsAsync(
                 decimal maxAverageGrade,
@@ -332,49 +334,45 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
+            const string sql = """
+                SELECT
+                    student_id AS StudentId,
+                    student_first_name AS StudentFirstName,
+                    student_last_name AS StudentLastName,
+                    student_email AS StudentEmail,
+                    group_id AS GroupId,
+                    group_prefix AS GroupPrefix,
+                    group_number AS GroupNumber,
+                    subject_count AS SubjectCount,
+                    lesson_count AS LessonCount,
+                    grade_count AS GradeCount,
+                    average_grade AS AverageGrade,
+                    present_count AS PresentCount,
+                    missing_count AS MissingCount,
+                    attendance_percent AS AttendancePercent
+                FROM dbo.fn_GetAtRiskStudents(
+                    @MaxAverageGrade,
+                    @MinMissingCount
+                )
+                ORDER BY
+                    missing_count DESC,
+                    average_grade,
+                    student_last_name;
+                """;
 
-            Query query =
-                db.Query(StudentOverallStatisticsView);
-
-
-            query.Where(q =>
-            {
-                q.Where(
-                    "average_grade",
-                    "<",
-                    maxAverageGrade
+            var result = await db.Connection
+                .QueryAsync<StudentOverallStatisticsItem>(
+                    sql,
+                    new
+                    {
+                        MaxAverageGrade = maxAverageGrade,
+                        MinMissingCount = minMissingCount
+                    }
                 );
 
-                q.OrWhereNull(
-                    "average_grade"
-                );
-
-                q.OrWhere(
-                    "missing_count",
-                    ">=",
-                    minMissingCount
-                );
-
-                return q;
-            });
-
-
-            IEnumerable<StudentOverallStatisticsItem> items =
-                await query
-                    .OrderByDesc(
-                        "missing_count"
-                    )
-                    .OrderBy(
-                        "average_grade"
-                    )
-                    .OrderBy(
-                        "student_last_name"
-                    )
-                    .GetAsync<StudentOverallStatisticsItem>();
-
-
-            return items.ToList();
+            return result.ToList();
         }
+
 
 
 

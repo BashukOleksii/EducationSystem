@@ -3,142 +3,71 @@ using EducationSystem.DTOs.Journal;
 using EducationSystem.Models;
 using EducationSystem.Models.Enums;
 using EducationSystem.Repositories.Interfaces;
+using System.Globalization;
 
 namespace EducationSystem.Services
 {
     public sealed class JournalService
     {
-        private readonly IJournalRepository
-            _journalRepository;
-
-        private readonly ILessonRepository
-            _lessonRepository;
-
-        private readonly IStudentRepository
-            _studentRepository;
-
+        private readonly IJournalRepository _journalRepository;
+        private readonly ILessonRepository _lessonRepository;
+        private readonly IStudentRepository _studentRepository;
 
         public JournalService(
             IJournalRepository journalRepository,
             ILessonRepository lessonRepository,
             IStudentRepository studentRepository)
         {
-            _journalRepository =
-                journalRepository;
-
-            _lessonRepository =
-                lessonRepository;
-
-            _studentRepository =
-                studentRepository;
+            _journalRepository = journalRepository;
+            _lessonRepository = lessonRepository;
+            _studentRepository = studentRepository;
         }
 
-
-        public async Task<PagedResult<JournalStudentItem>>
-      GetPagedAsync(
-          int lessonId,
-          int page,
-          int pageSize)
+        public async Task<PagedResult<JournalStudentItem>> GetPagedAsync(
+            int lessonId,
+            int page,
+            int pageSize)
         {
             if (page < 1)
-            {
                 page = 1;
-            }
-
 
             if (pageSize < 1)
-            {
                 pageSize = 10;
-            }
 
-
-            Lesson? lesson =
-                await _lessonRepository
-                    .GetByIdAsync(
-                        lessonId
-                    );
-
+            Lesson? lesson = await _lessonRepository.GetByIdAsync(lessonId);
 
             if (lesson is null)
-            {
-                throw new ArgumentException(
-                    "Заняття не знайдено."
-                );
-            }
+                throw new ArgumentException("Заняття не знайдено.");
 
-
-            return await _journalRepository
-                .GetPagedAsync(
-                    lessonId,
-                    lesson.GroupId,
-                    page,
-                    pageSize
-                );
+            return await _journalRepository.GetPagedAsync(
+                lessonId, lesson.GroupId, page, pageSize);
         }
 
-
-        public async Task SaveEntryAsync(
-            int lessonId,
-            JournalStudentItem item)
+        public async Task SaveEntryAsync(int lessonId, JournalStudentItem item)
         {
-            Lesson? lesson =
-                await _lessonRepository
-                    .GetByIdAsync(
-                        lessonId
-                    );
+            ArgumentNullException.ThrowIfNull(item);
+            byte? grade = ValidateAndConvertGrade(item);
 
+            Lesson? lesson = await _lessonRepository.GetByIdAsync(lessonId);
 
             if (lesson is null)
-            {
-                throw new ArgumentException(
-                    "Заняття не знайдено."
-                );
-            }
+                throw new ArgumentException("Заняття не знайдено.");
 
-
-            Student? student =
-                await _studentRepository
-                    .GetByIdAsync(
-                        item.StudentId
-                    );
-
+            Student? student = await _studentRepository.GetByIdAsync(item.StudentId);
 
             if (student is null)
-            {
-                throw new ArgumentException(
-                    "Студента не знайдено."
-                );
-            }
+                throw new ArgumentException("Студента не знайдено.");
 
             if (student.GroupId != lesson.GroupId)
-            {
-                throw new ArgumentException(
-                    "Студент не належить до групи цього заняття."
-                );
-            }
+                throw new ArgumentException("Студент не належить до групи цього заняття.");
 
+            AttendanceStatus status = item.IsMissing
+                ? AttendanceStatus.Missing
+                : AttendanceStatus.Present;
 
-            byte? grade =
-                ValidateAndConvertGrade(
-                    item.Grade
-                );
-
-
-            AttendanceStatus attendanceStatus =
-             item.IsMissing
-                 ? AttendanceStatus.Missing
-                 : AttendanceStatus.Present;
-
-
-            await _journalRepository
-                .SaveEntryAsync(
-                    lessonId,
-                    item.StudentId,
-                    grade,
-                    attendanceStatus
-                );
+            await _journalRepository.SaveEntryAsync(
+                lessonId, item.StudentId, grade, status);
         }
-
 
         public async Task SavePageAsync(
             int lessonId,
@@ -147,35 +76,35 @@ namespace EducationSystem.Services
             ArgumentNullException.ThrowIfNull(items);
 
             foreach (JournalStudentItem item in items)
-            {
-                ValidateAndConvertGrade(item.Grade);
-            }
+                ValidateAndConvertGrade(item);
 
-            await _journalRepository.SavePageAsync(
-                lessonId,
-                items
-            );
+            await _journalRepository.SavePageAsync(lessonId, items);
         }
 
-
-
-        private static byte? ValidateAndConvertGrade(
-            int? grade)
+        private static byte? ValidateAndConvertGrade(JournalStudentItem item)
         {
-            if (!grade.HasValue)
+            string input = item.GradeText;
+
+            if (!string.IsNullOrWhiteSpace(input))
             {
-                return null;
+                if (!int.TryParse(input, NumberStyles.None,
+                        CultureInfo.InvariantCulture, out int parsed)
+                    || parsed < 1 || parsed > 12
+                    || item.Grade != parsed)
+                {
+                    throw new ArgumentException(
+                        $"Некоректна оцінка студента {item.FullName}. Введи число від 1 до 12 або залиш поле порожнім.");
+                }
             }
 
-            if (grade.Value is < 1 or > 12)
-            {
+            if (item.IsMissing && item.Grade.HasValue)
                 throw new ArgumentException(
-                    "Оцінка повинна бути від 1 до 12."
-                );
-            }
+                    $"Студент {item.FullName} не може одночасно мати оцінку та НБ.");
 
+            if (item.Grade.HasValue && (item.Grade.Value < 1 || item.Grade.Value > 12))
+                throw new ArgumentException("Оцінка повинна бути від 1 до 12.");
 
-            return (byte)grade.Value;
+            return item.Grade.HasValue ? (byte)item.Grade.Value : null;
         }
     }
 }

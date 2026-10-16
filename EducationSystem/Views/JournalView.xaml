@@ -136,7 +136,7 @@
 
         <DataGrid
             Grid.Row="3"
-
+    
             ItemsSource="{Binding Students}"
 
             AutoGenerateColumns="False"
@@ -172,11 +172,12 @@
                 <!-- Оцінка -->
 
                 <DataGridTextColumn
-                    Header="Оцінка"
-                    Width="1*"
-                    Binding="{Binding Grade,
-                                      Mode=TwoWay,
-                                      UpdateSourceTrigger=PropertyChanged}"/>
+    Header="Оцінка"
+    Width="1*"
+    Binding="{Binding GradeText,
+                      Mode=TwoWay,
+                      UpdateSourceTrigger=PropertyChanged}"/>
+
 
 
                 <!-- НБ -->

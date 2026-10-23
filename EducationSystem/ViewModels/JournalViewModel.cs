@@ -243,16 +243,10 @@ namespace EducationSystem.ViewModels
                     string.Empty;
 
 
-                foreach (
-                    JournalStudentItem item
-                    in Students)
-                {
-                    await _journalService
-                        .SaveEntryAsync(
-                            SelectedLesson.Id,
-                            item
-                        );
-                }
+                await _journalService.SavePageAsync(
+                     SelectedLesson.Id,
+                     Students.ToList()
+                 );
 
 
                 Message =

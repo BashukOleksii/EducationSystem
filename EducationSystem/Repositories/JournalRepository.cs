@@ -1,10 +1,12 @@
-﻿using EducationSystem.Data;
+﻿using Dapper;
+using EducationSystem.Data;
 using EducationSystem.DTOs.Common;
 using EducationSystem.DTOs.Journal;
 using EducationSystem.Models.Enums;
 using EducationSystem.Repositories.Interfaces;
 using SqlKata;
 using SqlKata.Execution;
+using System.Data;
 
 namespace EducationSystem.Repositories
 {
@@ -22,98 +24,61 @@ namespace EducationSystem.Repositories
         }
 
 
+
         public async Task<PagedResult<JournalStudentItem>>
-     GetPagedAsync(
-         int lessonId,
-         int groupId,
-         int page,
-         int pageSize)
+            GetPagedAsync(
+                int lessonId,
+                int groupId,
+                int page,
+                int pageSize)
         {
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-            Query query =
-                db.Query("students")
+            const string sql = """
+            SELECT COUNT(*)
+            FROM dbo.fn_GetLessonJournal(@LessonId)
+            WHERE group_id = @GroupId;
 
-                    .LeftJoin(
-                        "grades",
-                        join =>
-                            join
-                                .On(
-                                    "grades.student_id",
-                                    "students.id"
-                                )
-                                .Where(
-                                    "grades.assessment_id",
-                                    lessonId
-                                )
-                    )
+            SELECT
+                student_id AS StudentId,
+                first_name AS FirstName,
+                last_name AS LastName,
+                email AS Email,
+                grade AS Grade,
+                attendance_status_value AS AttendanceStatusValue
+            FROM dbo.fn_GetLessonJournal(@LessonId)
+            WHERE group_id = @GroupId
+            ORDER BY
+                last_name,
+                first_name,
+                student_id
+            OFFSET @Offset ROWS
+            FETCH NEXT @PageSize ROWS ONLY;
+            """;
 
-                    .LeftJoin(
-                        "attendance",
-                        join =>
-                            join
-                                .On(
-                                    "attendance.student_id",
-                                    "students.id"
-                                )
-                                .Where(
-                                    "attendance.lesson_id",
-                                    lessonId
-                                )
-                    )
+            using var reader = await db.Connection.QueryMultipleAsync(
+                sql,
+                new
+                {
+                    LessonId = lessonId,
+                    GroupId = groupId,
+                    Offset = (page - 1) * pageSize,
+                    PageSize = pageSize
+                }
+            );
 
-                    .Where(
-                        "students.group_id",
-                        groupId
-                    );
-
-
-            IEnumerable<int> countResult =
-                await query
-                    .Clone()
-                    .AsCount()
-                    .GetAsync<int>();
-
-
-            int totalCount =
-                countResult.FirstOrDefault();
-
-            IEnumerable<JournalStudentItem> result =
-                await query
-                    .Clone()
-                    .Select(
-                        "students.id as student_id",
-                        "students.first_name",
-                        "students.last_name",
-                        "students.email",
-
-                        "grades.grade",
-
-                        "attendance.status as attendance_status_value"
-                    )
-                    .OrderBy(
-                        "students.last_name"
-                    )
-                    .OrderBy(
-                        "students.first_name"
-                    )
-                    .ForPage(
-                        page,
-                        pageSize
-                    )
-                    .GetAsync<JournalStudentItem>();
-
+            int totalCount = await reader.ReadSingleAsync<int>();
 
             List<JournalStudentItem> items =
-                result.ToList();
+                (await reader.ReadAsync<JournalStudentItem>())
+                .ToList();
 
             foreach (JournalStudentItem item in items)
             {
                 item.IsMissing =
                     item.AttendanceStatusValue == "missing";
             }
-
 
             return new PagedResult<JournalStudentItem>
             {
@@ -125,6 +90,8 @@ namespace EducationSystem.Repositories
         }
 
 
+
+
         public async Task SaveEntryAsync(
             int lessonId,
             int studentId,
@@ -134,201 +101,70 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
+            string? status = attendanceStatus switch
+            {
+                AttendanceStatus.Present => "present",
+                AttendanceStatus.Missing => "missing",
+                _ => null
+            };
 
-            await SaveGradeAsync(
-                db,
-                lessonId,
-                studentId,
-                grade
-            );
-
-
-            await SaveAttendanceAsync(
-                db,
-                lessonId,
-                studentId,
-                attendanceStatus
+            await db.Connection.ExecuteAsync(
+                "dbo.usp_SaveJournalEntry",
+                new
+                {
+                    LessonId = lessonId,
+                    StudentId = studentId,
+                    Grade = grade,
+                    AttendanceStatus = status
+                },
+                commandType: CommandType.StoredProcedure
             );
         }
 
 
-        private static async Task SaveGradeAsync(
-            QueryFactory db,
+        public async Task SavePageAsync(
             int lessonId,
-            int studentId,
-            byte? grade)
+            IReadOnlyList<JournalStudentItem> items)
         {
-            List<int> ids =
-                (
-                    await db
-                        .Query("grades")
-                        .Where(
-                            "assessment_id",
-                            lessonId
-                        )
-                        .Where(
-                            "student_id",
-                            studentId
-                        )
-                        .Select("id")
-                        .Limit(1)
-                        .GetAsync<int>()
-                )
-                .ToList();
+            using QueryFactory db =
+                _connectionFactory.CreateQueryFactory();
 
+            DataTable table = new();
 
-            bool exists =
-                ids.Count > 0;
+            table.Columns.Add("StudentId", typeof(int));
+            table.Columns.Add("Grade", typeof(byte));
+            table.Columns.Add("AttendanceStatus", typeof(string));
 
-            if (!grade.HasValue)
+            foreach (JournalStudentItem item in items)
             {
-                if (exists)
-                {
-                    await db
-                        .Query("grades")
-                        .Where(
-                            "id",
-                            ids[0]
-                        )
-                        .DeleteAsync();
-                }
+                object grade = item.Grade.HasValue
+                    ? checked((byte)item.Grade.Value)
+                    : DBNull.Value;
 
-
-                return;
-            }
-
-
-            if (exists)
-            {
-                await db
-                    .Query("grades")
-                    .Where(
-                        "id",
-                        ids[0]
-                    )
-                    .UpdateAsync(
-                        new
-                        {
-                            grade =
-                                grade.Value,
-
-                            updated_at =
-                                DateTime.Now
-                        }
-                    );
-
-
-                return;
-            }
-
-
-            await db
-                .Query("grades")
-                .InsertAsync(
-                    new
-                    {
-                        assessment_id =
-                            lessonId,
-
-                        student_id =
-                            studentId,
-
-                        grade =
-                            grade.Value
-                    }
-                );
-        }
-
-
-        private static async Task SaveAttendanceAsync(
-            QueryFactory db,
-            int lessonId,
-            int studentId,
-            AttendanceStatus? attendanceStatus)
-        {
-            List<int> ids =
-                (
-                    await db
-                        .Query("attendance")
-                        .Where(
-                            "lesson_id",
-                            lessonId
-                        )
-                        .Where(
-                            "student_id",
-                            studentId
-                        )
-                        .Select("id")
-                        .Limit(1)
-                        .GetAsync<int>()
-                )
-                .ToList();
-
-
-            bool exists =
-                ids.Count > 0;
-
-            if (!attendanceStatus.HasValue)
-            {
-                if (exists)
-                {
-                    await db
-                        .Query("attendance")
-                        .Where(
-                            "id",
-                            ids[0]
-                        )
-                        .DeleteAsync();
-                }
-
-
-                return;
-            }
-
-
-            string status =
-                attendanceStatus.Value ==
-                AttendanceStatus.Missing
+                string status = item.IsMissing
                     ? "missing"
                     : "present";
 
-            if (exists)
-            {
-                await db
-                    .Query("attendance")
-                    .Where(
-                        "id",
-                        ids[0]
-                    )
-                    .UpdateAsync(
-                        new
-                        {
-                            status,
-
-                            updated_at =
-                                DateTime.Now
-                        }
-                    );
-
-
-                return;
+                table.Rows.Add(
+                    item.StudentId,
+                    grade,
+                    status
+                );
             }
 
-
-            await db
-                .Query("attendance")
-                .InsertAsync(
-                    new
-                    {
-                        lesson_id =
-                            lessonId,
-
-                        student_id =
-                            studentId,
-
-                        status
-                    }
-                );
+            await db.Connection.ExecuteAsync(
+                "dbo.usp_SaveJournalPage",
+                new
+                {
+                    LessonId = lessonId,
+                    Entries = table.AsTableValuedParameter(
+                        "dbo.JournalEntryTableType"
+                    )
+                },
+                commandType: CommandType.StoredProcedure
+            );
         }
+
+
     }
 }

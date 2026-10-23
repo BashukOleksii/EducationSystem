@@ -140,6 +140,25 @@ namespace EducationSystem.Services
         }
 
 
+        public async Task SavePageAsync(
+            int lessonId,
+            IReadOnlyList<JournalStudentItem> items)
+        {
+            ArgumentNullException.ThrowIfNull(items);
+
+            foreach (JournalStudentItem item in items)
+            {
+                ValidateAndConvertGrade(item.Grade);
+            }
+
+            await _journalRepository.SavePageAsync(
+                lessonId,
+                items
+            );
+        }
+
+
+
         private static byte? ValidateAndConvertGrade(
             int? grade)
         {
@@ -148,10 +167,10 @@ namespace EducationSystem.Services
                 return null;
             }
 
-            if (grade.Value is < 0 or > 255)
+            if (grade.Value is < 1 or > 12)
             {
                 throw new ArgumentException(
-                    "Оцінка повинна бути від 0 до 255."
+                    "Оцінка повинна бути від 1 до 12."
                 );
             }
 

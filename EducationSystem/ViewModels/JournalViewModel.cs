@@ -57,7 +57,7 @@ namespace EducationSystem.ViewModels
         private string message =
             string.Empty;
 
-        public int PageSize { get; } = 20;
+        public int PageSize { get; } = 15;
 
 
         [RelayCommand]

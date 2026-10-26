@@ -35,27 +35,7 @@ namespace EducationSystem.Repositories
             using QueryFactory db =
                 _connectionFactory.CreateQueryFactory();
 
-            const string sql = """
-            SELECT COUNT(*)
-            FROM dbo.fn_GetLessonJournal(@LessonId)
-            WHERE group_id = @GroupId;
-
-            SELECT
-                student_id AS StudentId,
-                first_name AS FirstName,
-                last_name AS LastName,
-                email AS Email,
-                grade AS Grade,
-                attendance_status_value AS AttendanceStatusValue
-            FROM dbo.fn_GetLessonJournal(@LessonId)
-            WHERE group_id = @GroupId
-            ORDER BY
-                last_name,
-                first_name,
-                student_id
-            OFFSET @Offset ROWS
-            FETCH NEXT @PageSize ROWS ONLY;
-            """;
+            const string sql = "dbo.usp_GetScopedJournalPage";
 
             using var reader = await db.Connection.QueryMultipleAsync(
                 sql,
@@ -65,7 +45,8 @@ namespace EducationSystem.Repositories
                     GroupId = groupId,
                     Offset = (page - 1) * pageSize,
                     PageSize = pageSize
-                }
+                },
+                commandType: CommandType.StoredProcedure
             );
 
             int totalCount = await reader.ReadSingleAsync<int>();
@@ -109,7 +90,7 @@ namespace EducationSystem.Repositories
             };
 
             await db.Connection.ExecuteAsync(
-                "dbo.usp_SaveJournalEntry",
+                "dbo.usp_SaveScopedJournalEntry",
                 new
                 {
                     LessonId = lessonId,
@@ -153,7 +134,7 @@ namespace EducationSystem.Repositories
             }
 
             await db.Connection.ExecuteAsync(
-                "dbo.usp_SaveJournalPage",
+                "dbo.usp_SaveScopedJournalPage",
                 new
                 {
                     LessonId = lessonId,

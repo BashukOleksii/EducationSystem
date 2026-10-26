@@ -6,6 +6,7 @@ using EducationSystem.DTOs.TeacherSubjects;
 using EducationSystem.Models;
 using EducationSystem.Services;
 using System.Collections.ObjectModel;
+using System.Windows;
 
 namespace EducationSystem.ViewModels
 {
@@ -28,6 +29,13 @@ namespace EducationSystem.ViewModels
             _groupService;
 
         private int? _editingId;
+        private readonly int? _teacherId;
+
+        public bool CanManageLessons { get; }
+        public GridLength EditorColumnWidth =>
+            CanManageLessons ? new GridLength(340) : new GridLength(0);
+        public GridLength EditorGapWidth =>
+            CanManageLessons ? new GridLength(20) : new GridLength(0);
 
 
         public LessonsViewModel(
@@ -35,8 +43,12 @@ namespace EducationSystem.ViewModels
             TeacherSubjectService teacherSubjectService,
             TeacherService teacherService,
             SubjectService subjectService,
-            GroupService groupService)
+            GroupService groupService,
+            bool canManageLessons,
+            int? teacherId)
         {
+            CanManageLessons = canManageLessons;
+            _teacherId = teacherId;
             _lessonService =
                 lessonService;
 
@@ -358,13 +370,15 @@ namespace EducationSystem.ViewModels
                 TeacherSubjectListItem item
                 in teacherSubjects)
             {
-                TeacherSubjects.Add(item);
+                if (!_teacherId.HasValue || item.TeacherId == _teacherId.Value)
+                    TeacherSubjects.Add(item);
             }
 
 
             foreach (Teacher teacher in teachers)
             {
-                Teachers.Add(teacher);
+                if (!_teacherId.HasValue || teacher.Id == _teacherId.Value)
+                    Teachers.Add(teacher);
             }
 
 
@@ -477,6 +491,7 @@ namespace EducationSystem.ViewModels
         [RelayCommand]
         private void New()
         {
+            if (!CanManageLessons) return;
             ResetForm(
                 clearMessage: true
             );
@@ -486,6 +501,11 @@ namespace EducationSystem.ViewModels
         [RelayCommand]
         private async Task SaveAsync()
         {
+            if (!CanManageLessons)
+            {
+                Message = "Адміністрація може лише переглядати заняття.";
+                return;
+            }
             if (SelectedTeacherSubject is null)
             {
                 Message =
@@ -564,6 +584,11 @@ namespace EducationSystem.ViewModels
         [RelayCommand]
         private async Task DeleteAsync()
         {
+            if (!CanManageLessons)
+            {
+                Message = "Адміністрація може лише переглядати заняття.";
+                return;
+            }
             if (SelectedLesson is null)
             {
                 Message =

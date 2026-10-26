@@ -6,6 +6,10 @@
              xmlns:controls="clr-namespace:EducationSystem.Controls"
              mc:Ignorable="d">
 
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility" />
+    </UserControl.Resources>
+
     <Grid Margin="24">
 
         <Grid.RowDefinitions>
@@ -166,8 +170,8 @@
 
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="20"/>
-                <ColumnDefinition Width="340"/>
+                <ColumnDefinition Width="{Binding EditorGapWidth}"/>
+                <ColumnDefinition Width="{Binding EditorColumnWidth}"/>
             </Grid.ColumnDefinitions>
 
 
@@ -234,6 +238,7 @@
 
             <Border
                 Grid.Column="2"
+                Visibility="{Binding CanManageLessons, Converter={StaticResource BoolToVisibility}}"
                 BorderBrush="#DDDDDD"
                 BorderThickness="1"
                 CornerRadius="8"

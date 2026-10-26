@@ -53,14 +53,6 @@ namespace EducationSystem.Services
             if (lesson is null)
                 throw new ArgumentException("Заняття не знайдено.");
 
-            Student? student = await _studentRepository.GetByIdAsync(item.StudentId);
-
-            if (student is null)
-                throw new ArgumentException("Студента не знайдено.");
-
-            if (student.GroupId != lesson.GroupId)
-                throw new ArgumentException("Студент не належить до групи цього заняття.");
-
             AttendanceStatus status = item.IsMissing
                 ? AttendanceStatus.Missing
                 : AttendanceStatus.Present;

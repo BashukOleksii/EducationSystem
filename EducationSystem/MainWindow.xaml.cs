@@ -396,7 +396,9 @@ public partial class MainWindow : Window
                 teacherSubjectService,
                 teacherService,
                 subjectService,
-                groupService
+                groupService,
+                _currentUser.Role == UserRole.Teacher,
+                _currentUser.TeacherId
             );
 
 

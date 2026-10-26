@@ -14,6 +14,7 @@ public partial class MainWindow : Window
 {
     private readonly DatabaseConnectionFactory _databaseFactory;
     private readonly UserSession _currentUser;
+
     public event EventHandler? LogoutRequested;
 
     public MainWindow(
@@ -59,7 +60,7 @@ public partial class MainWindow : Window
         TeacherSubjectsButton.Visibility = isAdministration
             ? Visibility.Visible : Visibility.Collapsed;
 
-        LessonsButton.Visibility = (isTeacher || isAdministration)
+        LessonsButton.Visibility = (isTeacher)
             ? Visibility.Visible : Visibility.Collapsed;
         JournalButton.Visibility = isTeacher
             ? Visibility.Visible : Visibility.Collapsed;
@@ -99,18 +100,13 @@ public partial class MainWindow : Window
 
     private void ShowUsersPage()
     {
-        MainContent.Content = new TextBlock
-        {
-            Text = "Керування користувачами\n\n" +
-                   "Тут будуть реалізовані:\n" +
-                   "• Створення облікових записів\n" +
-                   "• Призначення ролей\n" +
-                   "• Блокування користувачів\n" +
-                   "• Видалення облікових записів",
-            FontSize = 20,
-            Margin = new Thickness(30),
-            TextWrapping = TextWrapping.Wrap
-        };
+        if (!HasRole(UserRole.Admin))
+            return;
+
+        ManagedAppUserService service =
+            new ManagedAppUserService(_databaseFactory);
+
+        MainContent.Content = new AdminUsersView(service);
     }
 
     private void LogoutButton_Click(object sender, RoutedEventArgs e)
@@ -320,7 +316,7 @@ public partial class MainWindow : Window
 
     private void LessonsButton_Click(object sender, RoutedEventArgs e)
     {
-        if (!HasRole(UserRole.Teacher, UserRole.Administration)) return;
+        if (!HasRole(UserRole.Teacher)) return;
         ShowLessons();
     }
 
@@ -390,16 +386,20 @@ public partial class MainWindow : Window
             );
 
 
+        bool canManageLessons = HasRole(UserRole.Administration);
+
+        int? currentTeacherId = _currentUser.TeacherId;
+
         LessonsViewModel viewModel =
-            new LessonsViewModel(
-                lessonService,
-                teacherSubjectService,
-                teacherService,
-                subjectService,
-                groupService,
-                _currentUser.Role == UserRole.Teacher,
-                _currentUser.TeacherId
-            );
+     new LessonsViewModel(
+         lessonService,
+         teacherSubjectService,
+         teacherService,
+         subjectService,
+         groupService,
+         canManageLessons,
+         currentTeacherId
+     );
 
 
         MainContent.Content =

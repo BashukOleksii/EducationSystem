@@ -1,53 +1,78 @@
-﻿using Dapper;
+﻿
+using Dapper;
 using EducationSystem.Configuration;
 using EducationSystem.Data;
+using EducationSystem.Security;
+using EducationSystem.Services;
+using EducationSystem.Views;
 using System.Windows;
+
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 
-namespace EducationSystem
+namespace EducationSystem;
+
+public partial class App : Application
 {
-    public partial class App : Application
+    public DatabaseConnectionFactory DatabaseFactory
+    { get; private set; } = null!;
+
+    protected override void OnStartup(
+        StartupEventArgs e)
     {
-        // НОВЕ: фабрика належить композиційному кореню застосунку.
-        // Її використовують обидві сторінки аналітики, не створюючи
-        // другого рядка підключення чи окремого глобального з'єднання.
-        public DatabaseConnectionFactory DatabaseFactory { get; private set; } = null!;
+        base.OnStartup(e);
 
-        protected override async void OnStartup(StartupEventArgs e)
+        DefaultTypeMap.MatchNamesWithUnderscores = true;
+
+        ShutdownMode =
+            ShutdownMode.OnExplicitShutdown;
+
+        try
         {
-            base.OnStartup(e);
-            DefaultTypeMap.MatchNamesWithUnderscores = true;
+            AppSettings settings = AppSettings.Load();
 
-            try
+            AuthService authService = new AuthService(
+                settings.ConnectionStrings.DefaultConnection
+            );
+
+            LoginWindow loginWindow =
+                new LoginWindow(authService);
+
+            bool? loginResult = loginWindow.ShowDialog();
+
+            if (loginResult != true ||
+                loginWindow.Result is null)
             {
-                AppSettings settings = AppSettings.Load();
-
-                // НОВЕ: зберігаємо фабрику для інших модулів аналітики.
-                DatabaseFactory = new DatabaseConnectionFactory(
-                    settings.ConnectionStrings.DefaultConnection);
-
-                /*
-                 * Seeder запускається ДО відкриття MainWindow.
-                 * Якщо база порожня -> додає тестові дані.
-                 * Якщо є хоча б один запис -> нічого не робить.
-                 */
-                DatabaseSeeder seeder = new DatabaseSeeder(DatabaseFactory);
-                await seeder.SeedIfEmptyAsync();
-
-                MainWindow mainWindow = new MainWindow(DatabaseFactory);
-                MainWindow = mainWindow;
-                mainWindow.Show();
-            }
-            catch (Exception exception)
-            {
-                MessageBox.Show(
-                    exception.Message,
-                    "Помилка запуску",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Error);
                 Shutdown();
+                return;
             }
+
+            LoginResult result = loginWindow.Result;
+
+            DatabaseFactory = result.DatabaseFactory;
+
+            MainWindow mainWindow = new MainWindow(
+                DatabaseFactory,
+                result.User
+            );
+
+            MainWindow = mainWindow;
+
+            ShutdownMode =
+                ShutdownMode.OnMainWindowClose;
+
+            mainWindow.Show();
+        }
+        catch (Exception exception)
+        {
+            MessageBox.Show(
+                exception.Message,
+                "Помилка запуску",
+                MessageBoxButton.OK,
+                MessageBoxImage.Error
+            );
+
+            Shutdown();
         }
     }
 }

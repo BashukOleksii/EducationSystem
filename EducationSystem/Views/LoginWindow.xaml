@@ -1,0 +1,155 @@
+﻿<Window x:Class="EducationSystem.Views.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Вхід — EducationSystem"
+        Width="460"
+        SizeToContent="Height"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="#EEF3F9"
+        FontFamily="Segoe UI">
+
+    <Grid Margin="20">
+
+        <!-- Основна картка авторизації -->
+        <Border Background="White"
+                CornerRadius="14"
+                Padding="30"
+                BorderBrush="#DFE6EF"
+                BorderThickness="1">
+
+            <StackPanel>
+
+              
+
+                <!-- Заголовок -->
+                <TextBlock Text="EducationSystem"
+                           FontSize="26"
+                           FontWeight="Bold"
+                           Foreground="#17253D"/>
+
+                <TextBlock Text="Система обліку академічної успішності"
+                           FontSize="12"
+                           Foreground="#64748B"
+                           Margin="0,4,0,24"/>
+
+                <TextBlock Text="Вхід до системи"
+                           FontSize="18"
+                           FontWeight="SemiBold"
+                           Foreground="#17253D"
+                           Margin="0,0,0,18"/>
+
+                <!-- Поле логіна -->
+                <TextBlock Text="Логін"
+                           FontWeight="SemiBold"
+                           Foreground="#334155"
+                           Margin="0,0,0,7"/>
+
+                <Border Background="#F8FAFC"
+                        BorderBrush="#CBD5E1"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Height="44">
+
+                    <TextBox x:Name="LoginTextBox"
+                             BorderThickness="0"
+                             Background="Transparent"
+                             VerticalContentAlignment="Center"
+                             Padding="12,0"
+                             FontSize="14"/>
+
+                </Border>
+
+                <!-- Поле пароля -->
+                <TextBlock Text="Пароль"
+                           FontWeight="SemiBold"
+                           Foreground="#334155"
+                           Margin="0,18,0,7"/>
+
+                <Border Background="#F8FAFC"
+                        BorderBrush="#CBD5E1"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        Height="44">
+
+                    <PasswordBox x:Name="PasswordInput"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 VerticalContentAlignment="Center"
+                                 Padding="12,0"
+                                 FontSize="14"/>
+
+                </Border>
+
+                <!-- Повідомлення про помилку -->
+                <TextBlock x:Name="ErrorText"
+                           Visibility="Collapsed"
+                           TextWrapping="Wrap"
+                           Foreground="#DC2626"
+                           FontSize="12"
+                           Margin="0,12,0,0"/>
+
+                <!-- Кнопка входу -->
+                <Button x:Name="LoginButton"
+                        Content="Увійти"
+                        Height="44"
+                        Background="#2563EB"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        FontSize="15"
+                        BorderThickness="0"
+                        Cursor="Hand"
+                        IsDefault="True"
+                        Margin="0,20,0,0"
+                        Click="LoginButton_Click">
+
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+
+                            <Border x:Name="ButtonBorder"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="8">
+
+                                <ContentPresenter
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"/>
+
+                            </Border>
+
+                            <ControlTemplate.Triggers>
+
+                                <Trigger Property="IsMouseOver"
+                                         Value="True">
+                                    <Setter TargetName="ButtonBorder"
+                                            Property="Background"
+                                            Value="#1D4ED8"/>
+                                </Trigger>
+
+                                <Trigger Property="IsEnabled"
+                                         Value="False">
+                                    <Setter TargetName="ButtonBorder"
+                                            Property="Background"
+                                            Value="#93C5FD"/>
+                                </Trigger>
+
+                            </ControlTemplate.Triggers>
+
+                        </ControlTemplate>
+                    </Button.Template>
+
+                </Button>
+
+                <!-- Підказка -->
+                <TextBlock Text="Доступ визначається роллю користувача"
+                           HorizontalAlignment="Center"
+                           Foreground="#94A3B8"
+                           FontSize="11"
+                           Margin="0,16,0,0"/>
+
+            </StackPanel>
+
+        </Border>
+
+    </Grid>
+
+</Window>

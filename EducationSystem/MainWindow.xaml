@@ -22,7 +22,7 @@
             BorderBrush="#DDDDDD"
             BorderThickness="0,0,1,0">
 
-            <StackPanel Margin="16">
+            <StackPanel x:Name="NavigationPanel" Margin="16">
 
                 <TextBlock
                     Text="Education System"

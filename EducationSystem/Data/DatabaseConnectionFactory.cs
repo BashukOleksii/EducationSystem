@@ -1,26 +1,36 @@
-﻿using Microsoft.Data.SqlClient;
-using SqlKata;
+﻿
+using Microsoft.Data.SqlClient;
+using SqlKata.Compilers;
 using SqlKata.Execution;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace EducationSystem.Data
+namespace EducationSystem.Data;
+
+public sealed class DatabaseConnectionFactory
 {
-    public sealed class DatabaseConnectionFactory
+    private readonly string _connectionString;
+    private readonly SqlCredential _credential;
+
+    public DatabaseConnectionFactory(
+        string connectionString,
+        SqlCredential credential)
     {
-        private readonly string _connectionString;
-        public DatabaseConnectionFactory(string connectionString)
-        {
-            _connectionString = connectionString;
-        }
-        
-        public QueryFactory CreateQueryFactory()
-        {
-            return new QueryFactory(
-                new SqlConnection(_connectionString),
-                new SqlKata.Compilers.SqlServerCompiler()
-            );
-        }
+        _connectionString = connectionString;
+        _credential = credential;
+    }
+
+    public SqlConnection CreateConnection()
+    {
+        return new SqlConnection(
+            _connectionString,
+            _credential
+        );
+    }
+
+    public QueryFactory CreateQueryFactory()
+    {
+        return new QueryFactory(
+            CreateConnection(),
+            new SqlServerCompiler()
+        );
     }
 }

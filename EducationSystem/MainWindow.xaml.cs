@@ -1,9 +1,11 @@
-﻿using System.Windows;
-using EducationSystem.Data;
+﻿using EducationSystem.Data;
 using EducationSystem.Repositories;
+using EducationSystem.Security;
 using EducationSystem.Services;
 using EducationSystem.ViewModels;
 using EducationSystem.Views;
+using System.Windows;
+using System.Windows.Controls;
 
 namespace EducationSystem
 {
@@ -11,16 +13,60 @@ namespace EducationSystem
     {
         private readonly DatabaseConnectionFactory _databaseFactory;
 
+
+        private readonly UserSession _currentUser;
+
         public MainWindow(
-            DatabaseConnectionFactory databaseFactory)
+            DatabaseConnectionFactory databaseFactory,
+            UserSession currentUser)
         {
             InitializeComponent();
 
-            _databaseFactory =
-                databaseFactory;
+            _databaseFactory = databaseFactory;
+            _currentUser = currentUser;
 
-            ShowGroups();
+            ConfigureUserInterface();
         }
+
+        private void ConfigureUserInterface()
+        {
+            if (_currentUser.Role == UserRole.Administration)
+            {
+                ShowGroups();
+                return;
+            }
+
+            foreach (UIElement element in NavigationPanel.Children)
+            {
+                if (element is System.Windows.Controls.Button button)
+                {
+                    button.Visibility = Visibility.Collapsed;
+                }
+            }
+
+            string roleName =
+                _currentUser.Role switch
+                {
+                    UserRole.Teacher => "Викладач",
+                    UserRole.Admin => "Адміністратор",
+                    _ => "Адміністрація"
+                };
+
+            MainContent.Content = new TextBlock
+            {
+                Text =
+                    $"Вхід виконано успішно!\n\n" +
+                    $"Користувач: {_currentUser.Login}\n" +
+                    $"Роль: {roleName}\n\n" +
+                    "Функціонал цієї ролі буде підключено " +
+                    "на наступному етапі.",
+
+                FontSize = 18,
+                Margin = new Thickness(24),
+                TextWrapping = TextWrapping.Wrap
+            };
+        }
+
 
         private void GroupsButton_Click(
             object sender,

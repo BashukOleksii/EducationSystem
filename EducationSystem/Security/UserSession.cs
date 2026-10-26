@@ -1,5 +1,4 @@
-﻿
-using EducationSystem.Data;
+﻿using EducationSystem.Data;
 
 namespace EducationSystem.Security;
 
@@ -12,7 +11,8 @@ public enum UserRole
 
 public sealed record UserSession(
     string Login,
-    UserRole Role
+    UserRole Role,
+    int? TeacherId
 );
 
 public sealed record LoginResult(

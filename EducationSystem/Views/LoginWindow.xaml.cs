@@ -1,7 +1,7 @@
-﻿
-using EducationSystem.Security;
+﻿using EducationSystem.Security;
 using EducationSystem.Services;
 using Microsoft.Data.SqlClient;
+using System.Diagnostics;
 using System.Security;
 using System.Windows;
 
@@ -16,62 +16,70 @@ public partial class LoginWindow : Window
     public LoginWindow(AuthService authService)
     {
         InitializeComponent();
-
         _authService = authService;
+        LoginTextBox.Focus();
     }
 
-    private async void LoginButton_Click(
-        object sender,
-        RoutedEventArgs e)
+    private async void LoginButton_Click(object sender, RoutedEventArgs e)
     {
         LoginButton.IsEnabled = false;
         ErrorText.Text = string.Empty;
+        ErrorText.Visibility = Visibility.Collapsed;
 
         try
         {
-            string login = LoginTextBox.Text;
-
-            using SecureString password =
-                PasswordInput.SecurePassword;
+            using SecureString password = PasswordInput.SecurePassword;
 
             Result = await _authService.LoginAsync(
-                login,
-                password
-            );
+                LoginTextBox.Text,
+                password);
 
             PasswordInput.Clear();
-
             DialogResult = true;
         }
-        catch (SqlException ex)
-            when (ex.Number == 18456)
+        catch (SqlException ex) when (ex.Number == 18456)
         {
-            ErrorText.Text =
-                "Неправильний логін або пароль, " +
-                "або вхід для цього користувача заборонено.";
+            ShowError("Неправильний логін або пароль або вхід заборонений.");
         }
-        catch (SqlException)
+        catch (SqlException ex) when (ex.Number == 51050 || ex.Number == 51051)
         {
-            ErrorText.Text =
-                "Помилка підключення до SQL Server. " +
-                "Перевірте доступність сервера та бази даних.";
+            ShowError(ex.Message);
+        }
+        catch (SqlException ex)
+        {
+            Debug.WriteLine(ex.ToString());
+#if DEBUG
+            ShowError($"SQL Server ({ex.Number}): {ex.Message}");
+#else
+            ShowError("Не вдалося підключитися до SQL Server.");
+#endif
         }
         catch (UnauthorizedAccessException ex)
         {
-            ErrorText.Text = ex.Message;
+            ShowError(ex.Message);
         }
         catch (ArgumentException ex)
         {
-            ErrorText.Text = ex.Message;
+            ShowError(ex.Message);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            ErrorText.Text =
-                "Не вдалося виконати авторизацію.";
+            Debug.WriteLine(ex.ToString());
+#if DEBUG
+            ShowError(ex.Message);
+#else
+            ShowError("Сталася помилка під час авторизації.");
+#endif
         }
         finally
         {
             LoginButton.IsEnabled = true;
         }
+    }
+
+    private void ShowError(string message)
+    {
+        ErrorText.Text = message;
+        ErrorText.Visibility = Visibility.Visible;
     }
 }

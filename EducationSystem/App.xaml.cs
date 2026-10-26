@@ -1,10 +1,10 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using EducationSystem.Configuration;
 using EducationSystem.Data;
 using EducationSystem.Security;
 using EducationSystem.Services;
 using EducationSystem.Views;
+using System;
 using System.Windows;
 
 using Application = System.Windows.Application;
@@ -14,65 +14,73 @@ namespace EducationSystem;
 
 public partial class App : Application
 {
-    public DatabaseConnectionFactory DatabaseFactory
-    { get; private set; } = null!;
+    public DatabaseConnectionFactory DatabaseFactory { get; private set; } = null!;
 
-    protected override void OnStartup(
-        StartupEventArgs e)
+    protected override void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
-
         DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-        ShutdownMode =
-            ShutdownMode.OnExplicitShutdown;
+        // На етапі входу та виходу вікна змінюються без завершення програми.
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        OpenLoginWindow();
+    }
 
+    private void OpenLoginWindow()
+    {
         try
         {
             AppSettings settings = AppSettings.Load();
-
             AuthService authService = new AuthService(
-                settings.ConnectionStrings.DefaultConnection
-            );
+                settings.ConnectionStrings.DefaultConnection);
 
-            LoginWindow loginWindow =
-                new LoginWindow(authService);
+            LoginWindow loginWindow = new LoginWindow(authService);
+            bool? result = loginWindow.ShowDialog();
 
-            bool? loginResult = loginWindow.ShowDialog();
-
-            if (loginResult != true ||
-                loginWindow.Result is null)
+            if (result != true || loginWindow.Result is null)
             {
                 Shutdown();
                 return;
             }
 
-            LoginResult result = loginWindow.Result;
+            LoginResult loginResult = loginWindow.Result;
+            DatabaseFactory = loginResult.DatabaseFactory;
 
-            DatabaseFactory = result.DatabaseFactory;
+            MainWindow window = new MainWindow(
+                DatabaseFactory, loginResult.User);
 
-            MainWindow mainWindow = new MainWindow(
-                DatabaseFactory,
-                result.User
-            );
-
-            MainWindow = mainWindow;
-
-            ShutdownMode =
-                ShutdownMode.OnMainWindowClose;
-
-            mainWindow.Show();
+            window.LogoutRequested += MainWindow_LogoutRequested;
+            MainWindow = window;
+            ShutdownMode = ShutdownMode.OnMainWindowClose;
+            window.Show();
         }
-        catch (Exception exception)
+        catch (Exception ex)
         {
-            MessageBox.Show(
-                exception.Message,
-                "Помилка запуску",
-                MessageBoxButton.OK,
-                MessageBoxImage.Error
-            );
-
+            DatabaseFactory?.Dispose();
+            MessageBox.Show(ex.Message, "Помилка запуску",
+                MessageBoxButton.OK, MessageBoxImage.Error);
             Shutdown();
         }
+    }
+
+    private void MainWindow_LogoutRequested(object? sender, EventArgs e)
+    {
+        if (sender is not MainWindow previousWindow)
+            return;
+
+        ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        previousWindow.LogoutRequested -= MainWindow_LogoutRequested;
+        previousWindow.Close();
+
+        DatabaseFactory?.Dispose();
+        DatabaseFactory = null!;
+
+        Dispatcher.BeginInvoke(new Action(OpenLoginWindow));
+    }
+
+    protected override void OnExit(ExitEventArgs e)
+    {
+        DatabaseFactory?.Dispose();
+        base.OnExit(e);
     }
 }
